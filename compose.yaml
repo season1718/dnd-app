@@ -1,0 +1,13 @@
+services:
+  dnd-companion:
+    build:
+      context: .
+    image: dnd-companion:local
+    ports:
+      - "3000:3000"
+    volumes:
+      - dnd-data:/app/.wrangler
+    restart: unless-stopped
+
+volumes:
+  dnd-data:
