@@ -24,6 +24,31 @@ pnpm dev
 
 Приложение откроется на `http://localhost:3000`.
 
+## Docker
+
+Требуется запущенный Docker Desktop (Windows/macOS) или Docker Engine (Linux).
+
+```bash
+docker compose up --build -d
+```
+
+Приложение откроется на `http://localhost:3000`. Локальная D1/SQLite база
+сохраняется в именованном томе `dnd-data` и не удаляется при пересоздании
+контейнера.
+
+Просмотр логов и остановка:
+
+```bash
+docker compose logs -f
+docker compose down
+```
+
+Чтобы удалить контейнер вместе с сохранёнными данными:
+
+```bash
+docker compose down -v
+```
+
 ## Проверка
 
 ```bash
