@@ -6,17 +6,19 @@ import type { FormEvent } from "react";
 type Profile = { id: string; name: string; globalRole?: string };
 type Character = { id: string; name: string; kind: string; classes: string; level: number };
 
-export function ManagementPanel({ actor, profiles, characters, onChanged, onMessage }: {
+export function ManagementPanel({ actor, campaign, profiles, characters, onChanged, onCampaignCreated, onMessage }: {
   actor: Profile;
+  campaign: { id: string; name: string; description: string };
   profiles: Profile[];
   characters: Character[];
   onChanged: () => void;
+  onCampaignCreated: (campaignId: string) => void;
   onMessage: (message: string) => void;
 }) {
   const [members, setMembers] = useState<Array<Profile & { role: string }>>([]);
   const [newProfile, setNewProfile] = useState("");
-  const [campaignName, setCampaignName] = useState("Long Story Short");
-  const [campaignDescription, setCampaignDescription] = useState("Туманный город");
+  const [campaignName, setCampaignName] = useState(campaign.name);
+  const [campaignDescription, setCampaignDescription] = useState(campaign.description);
   const [memberId, setMemberId] = useState("");
   const [memberRole, setMemberRole] = useState("PLAYER");
   const [characterName, setCharacterName] = useState("");
@@ -25,11 +27,15 @@ export function ManagementPanel({ actor, profiles, characters, onChanged, onMess
   const isOverseer = actor.name === "Overseer" || actor.globalRole === "OVERSEER";
 
   function loadMembers() {
-    fetch(`/api/campaigns/campaign-lss/members?profileId=${encodeURIComponent(actor.id)}`)
+    fetch(`/api/campaigns/${encodeURIComponent(campaign.id)}/members?profileId=${encodeURIComponent(actor.id)}`)
       .then((response) => response.json())
       .then((data) => setMembers(data.members ?? []));
   }
-  useEffect(loadMembers, [actor.id]);
+  useEffect(() => {
+    loadMembers();
+  // Reload the campaign-scoped panel whenever actor or campaign changes.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [actor.id, campaign.id, campaign.name, campaign.description]);
 
   async function send(url: string, init: RequestInit, success: string) {
     const response = await fetch(url, init);
@@ -47,19 +53,29 @@ export function ManagementPanel({ actor, profiles, characters, onChanged, onMess
 
   async function saveCampaign(event: FormEvent) {
     event.preventDefault();
-    await send("/api/campaigns/campaign-lss", { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ actorProfileId: actor.id, name: campaignName, description: campaignDescription }) }, "Кампания обновлена");
+    await send(`/api/campaigns/${encodeURIComponent(campaign.id)}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ actorProfileId: actor.id, name: campaignName, description: campaignDescription }) }, "Кампания обновлена");
+  }
+
+  async function createCampaign() {
+    const name = window.prompt("Название новой кампании");
+    if (!name?.trim()) return;
+    const response = await fetch("/api/campaigns", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ actorProfileId: actor.id, name, description: "" }) });
+    const result = await response.json();
+    if (!response.ok) return onMessage(result.error ?? "Не удалось создать кампанию");
+    onMessage(`Кампания «${result.name}» создана`);
+    onCampaignCreated(result.id);
   }
 
   async function addMember(event: FormEvent) {
     event.preventDefault();
     if (!memberId) return;
-    await send("/api/campaigns/campaign-lss/members", { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ actorProfileId: actor.id, profileId: memberId, role: memberRole }) }, "Состав кампании обновлён");
+    await send(`/api/campaigns/${encodeURIComponent(campaign.id)}/members`, { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ actorProfileId: actor.id, profileId: memberId, role: memberRole }) }, "Состав кампании обновлён");
   }
 
   async function createCharacter(event: FormEvent) {
     event.preventDefault();
     if (!characterName.trim()) return;
-    const ok = await send("/api/characters", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ actorProfileId: actor.id, campaignId: "campaign-lss", name: characterName, kind: characterKind, assignToProfileId: assigneeId || undefined }) }, `Персонаж «${characterName}» создан`);
+    const ok = await send("/api/characters", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ actorProfileId: actor.id, campaignId: campaign.id, name: characterName, kind: characterKind, assignToProfileId: assigneeId || undefined }) }, `Персонаж «${characterName}» создан`);
     if (ok) setCharacterName("");
   }
 
@@ -70,9 +86,10 @@ export function ManagementPanel({ actor, profiles, characters, onChanged, onMess
         <label>Название<input value={campaignName} onChange={(event) => setCampaignName(event.target.value)}/></label>
         <label>Описание<input value={campaignDescription} onChange={(event) => setCampaignDescription(event.target.value)}/></label>
         <button type="submit">Сохранить кампанию</button>
+        <button type="button" onClick={createCampaign}>Создать новую кампанию</button>
       </form>
       <h4>Участники</h4>
-      <div className="manager-list">{members.map((member) => <div key={member.id}><span>{member.name}<small>{member.role === "GM" ? "Мастер" : "Игрок"}</small></span><select value={member.role} disabled={member.id === actor.id} onChange={(event) => send("/api/campaigns/campaign-lss/members", { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ actorProfileId: actor.id, profileId: member.id, role: event.target.value }) }, "Роль изменена")}><option value="PLAYER">Игрок</option><option value="GM">Мастер</option></select>{member.id !== actor.id && <button onClick={() => send(`/api/campaigns/campaign-lss/members?actorProfileId=${actor.id}&profileId=${member.id}`, { method: "DELETE" }, "Участник удалён")}>×</button>}</div>)}</div>
+      <div className="manager-list">{members.map((member) => <div key={member.id}><span>{member.name}<small>{member.role === "GM" ? "Мастер" : "Игрок"}</small></span><select value={member.role} disabled={member.id === actor.id} onChange={(event) => send(`/api/campaigns/${encodeURIComponent(campaign.id)}/members`, { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ actorProfileId: actor.id, profileId: member.id, role: event.target.value }) }, "Роль изменена")}><option value="PLAYER">Игрок</option><option value="GM">Мастер</option></select>{member.id !== actor.id && <button onClick={() => send(`/api/campaigns/${encodeURIComponent(campaign.id)}/members?actorProfileId=${encodeURIComponent(actor.id)}&profileId=${encodeURIComponent(member.id)}`, { method: "DELETE" }, "Участник удалён")}>×</button>}</div>)}</div>
       <form onSubmit={addMember} className="manager-inline"><select value={memberId} onChange={(event) => setMemberId(event.target.value)}><option value="">Выберите профиль…</option>{profiles.filter((profile) => !members.some((member) => member.id === profile.id)).map((profile) => <option key={profile.id} value={profile.id}>{profile.name}</option>)}</select><select value={memberRole} onChange={(event) => setMemberRole(event.target.value)}><option value="PLAYER">Игрок</option><option value="GM">Мастер</option></select><button>Добавить</button></form>
     </div>
 

@@ -1,11 +1,13 @@
 import { env } from "cloudflare:workers";
 import { ensureDatabase } from "../../../../db/bootstrap";
 import { parseLongStoryShortV2 } from "../../../../domain/importers/long-story-short";
+import { importCharacterSchema, parseJsonBody } from "../../../../domain/api-validation";
 
 export async function POST(request: Request) {
   await ensureDatabase();
-  const payload = await request.json() as { profileId?: string; campaignId?: string; assignToProfileId?: string; document?: unknown };
-  if (!payload.profileId || !payload.campaignId || !payload.document) return Response.json({ error: "Не указаны профиль, кампания или документ" }, { status: 400 });
+  const parsed = await parseJsonBody(request, importCharacterSchema);
+  if (!parsed.success) return parsed.response;
+  const payload = parsed.data;
   const actor = await env.DB.prepare(`SELECT p.global_role AS globalRole, cm.role AS campaignRole FROM profiles p LEFT JOIN campaign_members cm ON cm.profile_id=p.id AND cm.campaign_id=? WHERE p.id=?`).bind(payload.campaignId, payload.profileId).first<{ globalRole: string; campaignRole: string | null }>();
   if (!actor || (actor.globalRole !== "OVERSEER" && actor.campaignRole !== "GM")) return Response.json({ error: "Импортировать системные поля может Мастер или Overseer" }, { status: 403 });
 

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ManagementPanel } from "./ManagementPanel";
 import { Spellbook } from "./Spellbook";
+import { restoreCharacterResource, spendCharacterResource } from "../domain/character-resources";
 
 type SheetSections = {
   skills: Array<{ name: string; ability: string; proficient: boolean; expertise: boolean }>;
@@ -13,6 +14,23 @@ type SheetSections = {
   conditions: string[];
   hitDice: Array<{ die: string; maximum: number; spent: number }>;
 };
+
+type CharacterClass = { className: string; subclassName?: string; level: number };
+type CharacterResource = { id: string; name: string; maximum: number; spent: number };
+type Campaign = { id: string; name: string; description: string; role?: string | null };
+type CharacterPayload = {
+  revision?: string;
+  current_hp?: number; coins_json?: string; notes_json?: string; equipment_json?: string;
+  name: string; kind: string; species: string; background: string; alignment: string;
+  experience: number; armor_class: number; speed: number; maximum_hp: number;
+  strength: number; dexterity: number; constitution: number; intelligence: number; wisdom: number; charisma: number;
+  classes?: CharacterClass[]; resources?: CharacterResource[]; sections?: Partial<SheetSections>;
+};
+
+function parseJson<T>(value: string | undefined, fallback: T): T {
+  try { return JSON.parse(value ?? "") as T; }
+  catch { return fallback; }
+}
 
 const defaultSections: SheetSections = {
   skills: [
@@ -37,7 +55,11 @@ export default function Home() {
   const [notes, setNotes] = useState("Кол-во использований «Второго дыхания»: 2");
   const [saved, setSaved] = useState({ hp, coins, notes });
   const [profiles, setProfiles] = useState<Array<{ id: string; name: string; globalRole?: string }>>([]);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [campaign, setCampaign] = useState<Campaign | null>(null);
+  const [canManage, setCanManage] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [revision, setRevision] = useState("");
   const [message, setMessage] = useState("Все изменения сохранены");
   const importInput = useRef<HTMLInputElement>(null);
   const [characters, setCharacters] = useState<Array<{ id: string; name: string; kind: string; species: string; level: number; classes: string }>>([]);
@@ -45,7 +67,7 @@ export default function Home() {
   const [character, setCharacter] = useState({ name: "Ори Картанг", kind: "PC", species: "Дварф", background: "Стражник", alignment: "Нейтральный злой", level: 1, classes: "Воин", experience: 200, armorClass: 16, speed: 30, maximumHp: 12, strength: 15, dexterity: 12, constitution: 15, intelligence: 11, wisdom: 12, charisma: 10 });
   const [savedCharacter, setSavedCharacter] = useState(character);
   const [equipment, setEquipment] = useState<string[]>([]);
-  const [resources, setResources] = useState<Array<{ id: string; name: string; maximum: number; spent: number }>>([]);
+  const [resources, setResources] = useState<CharacterResource[]>([]);
   const [savedResources, setSavedResources] = useState(resources);
   const [classesDetail, setClassesDetail] = useState<Array<{ className: string; subclassName: string; level: number }>>([{ className: "Воин", subclassName: "", level: 1 }]);
   const [savedClasses, setSavedClasses] = useState(classesDetail);
@@ -59,7 +81,7 @@ export default function Home() {
     ["Сила", character.strength], ["Ловкость", character.dexterity], ["Телосложение", character.constitution],
     ["Интеллект", character.intelligence], ["Мудрость", character.wisdom], ["Харизма", character.charisma],
   ] as const;
-  const privileged = profile === "Мастер" || profile === "Overseer";
+  const privileged = canManage;
   const activeProfile = profiles.find((item) => item.name === profile);
 
   useEffect(() => {
@@ -70,18 +92,19 @@ export default function Home() {
     return () => window.removeEventListener("beforeunload", warn);
   }, [dirty]);
 
-  function applyCharacter(data: any) {
+  function applyCharacter(data: CharacterPayload) {
+    setRevision(data.revision ?? "");
     const nextHp = Number(data.current_hp ?? 1);
-    const nextCoins = JSON.parse(String(data.coins_json ?? "{}"))?.gp ?? 0;
-    const parsedNotes = JSON.parse(String(data.notes_json ?? "[]"));
+    const nextCoins = parseJson<{ gp?: number }>(data.coins_json, {}).gp ?? 0;
+    const parsedNotes = parseJson<Array<string | { text?: string }>>(data.notes_json, []);
     const nextNotes = typeof parsedNotes?.[0] === "string" ? parsedNotes[0] : parsedNotes?.[0]?.text ?? "";
-    const classNames = (data.classes ?? []).map((item: any) => item.className).join(" / ") || "Без класса";
-    const level = (data.classes ?? []).reduce((sum: number, item: any) => sum + Number(item.level), 0);
+    const classNames = (data.classes ?? []).map((item) => item.className).join(" / ") || "Без класса";
+    const level = (data.classes ?? []).reduce((sum, item) => sum + Number(item.level), 0);
     const nextCharacter = { name: data.name, kind: data.kind, species: data.species, background: data.background, alignment: data.alignment, level, classes: classNames, experience: data.experience, armorClass: data.armor_class, speed: data.speed, maximumHp: data.maximum_hp, strength: data.strength, dexterity: data.dexterity, constitution: data.constitution, intelligence: data.intelligence, wisdom: data.wisdom, charisma: data.charisma };
     setCharacter(nextCharacter); setSavedCharacter(nextCharacter);
-    setEquipment(JSON.parse(String(data.equipment_json ?? "[]")));
+    setEquipment(parseJson<string[]>(data.equipment_json, []));
     setResources(data.resources ?? []); setSavedResources(data.resources ?? []);
-    const nextClasses = (data.classes ?? []).map((item: any) => ({ className: item.className, subclassName: item.subclassName ?? "", level: Number(item.level) }));
+    const nextClasses = (data.classes ?? []).map((item) => ({ className: item.className, subclassName: item.subclassName ?? "", level: Number(item.level) }));
     setClassesDetail(nextClasses); setSavedClasses(nextClasses);
     const nextSections = { ...defaultSections, ...(data.sections ?? {}) } as SheetSections;
     setSections(nextSections); setSavedSections(nextSections);
@@ -89,24 +112,35 @@ export default function Home() {
     setSaved({ hp: nextHp, coins: nextCoins, notes: nextNotes });
   }
 
-  function loadWorkspace(profileId = "profile-ori") {
-    fetch(`/api/bootstrap?profileId=${encodeURIComponent(profileId)}`)
+  function loadWorkspace(profileId = "profile-ori", campaignId?: string) {
+    const campaignQuery = campaignId ? `&campaignId=${encodeURIComponent(campaignId)}` : "";
+    fetch(`/api/bootstrap?profileId=${encodeURIComponent(profileId)}${campaignQuery}`)
       .then((response) => {
         if (!response.ok) throw new Error("Не удалось загрузить данные");
         return response.json();
       })
       .then((data) => {
         setProfiles(data.profiles);
+        setCampaigns(data.campaigns ?? []);
+        setCampaign(data.campaign ?? null);
+        setCanManage(Boolean(data.permissions?.privileged));
         setCharacters(data.characters);
-        setCharacterId(data.character.id);
-        applyCharacter(data.character);
-        setMessage("Все изменения сохранены");
+        if (data.character) {
+          setCharacterId(data.character.id);
+          applyCharacter(data.character);
+          setMessage("Все изменения сохранены");
+        } else {
+          setCharacterId("");
+          setMessage(data.campaign ? "В этой кампании пока нет доступных персонажей" : "Для профиля нет доступных кампаний");
+        }
       })
       .catch(() => setMessage("Сервер данных недоступен"));
   }
 
   useEffect(() => {
     loadWorkspace();
+  // Initial bootstrap must run once; later profile changes call loadWorkspace explicitly.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function switchCharacter(nextId: string) {
@@ -129,23 +163,20 @@ export default function Home() {
       const response = await fetch(`/api/characters/${encodeURIComponent(characterId)}`, {
         method: "PATCH",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ profileId: selectedProfile.id, currentHp: hp, coins: { gp: coins }, notes, resources, system: privileged ? character : undefined, sections: privileged ? sections : undefined }),
+        body: JSON.stringify({ profileId: selectedProfile.id, expectedRevision: revision, currentHp: hp, coins: { gp: coins }, notes, resources, system: privileged ? { name: character.name, kind: character.kind, species: character.species, background: character.background, alignment: character.alignment, experience: character.experience, armorClass: character.armorClass, speed: character.speed, maximumHp: character.maximumHp, strength: character.strength, dexterity: character.dexterity, constitution: character.constitution, intelligence: character.intelligence, wisdom: character.wisdom, charisma: character.charisma } : undefined, sections: privileged ? sections : undefined, classes: privileged ? classesDetail : undefined }),
       });
-      if (!response.ok) throw new Error();
       const result = await response.json();
-      if (privileged && JSON.stringify(classesDetail) !== JSON.stringify(savedClasses)) {
-        const classResponse = await fetch(`/api/characters/${encodeURIComponent(characterId)}/classes`, { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ actorProfileId: selectedProfile.id, classes: classesDetail }) });
-        if (!classResponse.ok) throw new Error();
-      }
+      if (!response.ok) throw new Error(result.error ?? "Не удалось сохранить");
       setHp(result.currentHp); setCoins(result.coins.gp); setNotes(result.notes);
+      setRevision(result.revision);
       setSaved({ hp: result.currentHp, coins: result.coins.gp, notes: result.notes });
       setSavedCharacter(character);
       setSavedClasses(classesDetail);
       setSavedSections(sections);
       setSavedResources(resources);
       setMessage("Все изменения сохранены");
-    } catch {
-      setMessage("Не удалось сохранить — изменения остались в черновике");
+    } catch (error) {
+      setMessage(error instanceof Error ? `${error.message} — изменения остались в черновике` : "Не удалось сохранить — изменения остались в черновике");
     } finally {
       setSaving(false);
     }
@@ -170,19 +201,38 @@ export default function Home() {
     setMessage("Проверяем файл персонажа…");
     try {
       const document = JSON.parse(await file.text());
-      const response = await fetch("/api/imports/long-story-short", {
+      const ownFormat = document && typeof document === "object" && document.format === "dnd-companion-character";
+      const response = await fetch(ownFormat ? "/api/imports/dnd-companion" : "/api/imports/long-story-short", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ profileId: selectedProfile.id, campaignId: "campaign-lss", assignToProfileId: "profile-ori", document }),
+        body: JSON.stringify({ profileId: selectedProfile.id, campaignId: campaign?.id, document }),
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error);
       setMessage(`Импортирован персонаж «${result.name}»${result.warnings?.length ? ` · предупреждений: ${result.warnings.length}` : ""}`);
+      loadWorkspace(selectedProfile.id, campaign?.id);
     } catch (error) {
       setMessage(error instanceof SyntaxError ? "Файл не является корректным JSON" : error instanceof Error ? error.message : "Не удалось импортировать персонажа");
     } finally {
       if (importInput.current) importInput.current.value = "";
     }
+  }
+
+  async function exportCharacter() {
+    if (!activeProfile) return setMessage("Профиль ещё загружается");
+    const response = await fetch(`/api/characters/${encodeURIComponent(characterId)}/export?profileId=${encodeURIComponent(activeProfile.id)}`);
+    if (!response.ok) {
+      const result = await response.json().catch(() => ({}));
+      return setMessage(result.error ?? "Не удалось экспортировать персонажа");
+    }
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${character.name.trim().replace(/[^\p{L}\p{N}._-]+/gu, "-") || "character"}.dnd-companion.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+    setMessage(`Персонаж «${character.name}» экспортирован`);
   }
 
   return (
@@ -211,8 +261,8 @@ export default function Home() {
       </header>
 
       <section className="campaign-strip" id="campaign">
-        <div><span className="eyebrow">Кампания</span><strong>Long Story Short</strong></div>
-        <div className="campaign-meta"><span>Глава I</span><span>Туманный город</span><span className="online">3 участника в сети</span></div>
+        <div><span className="eyebrow">Кампания</span>{campaigns.length > 1 && activeProfile ? <select aria-label="Активная кампания" value={campaign?.id ?? ""} onChange={(event) => { if (dirty && !window.confirm("Отменить несохранённые изменения и сменить кампанию?")) return; loadWorkspace(activeProfile.id, event.target.value); }}>{campaigns.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select> : <strong>{campaign?.name ?? "Нет кампании"}</strong>}</div>
+        <div className="campaign-meta"><span>{campaign?.description || "Описание не указано"}</span><span>{characters.length} персонажей доступно</span></div>
       </section>
 
       <div className="page" id="top">
@@ -232,9 +282,9 @@ export default function Home() {
             <a href="#spells">Заклинания</a>
             <a href="#notes">Заметки</a>
           </div>
-          <button className="secondary">Экспорт JSON</button>
+          <button className="secondary" onClick={exportCharacter} disabled={!characterId}>Экспорт JSON</button>
           <input ref={importInput} hidden type="file" accept="application/json,.json" onChange={(event) => importCharacter(event.target.files?.[0])}/>
-          <button className="secondary import-button" onClick={() => importInput.current?.click()} disabled={profile === "Ори Картанг"}>Импорт LSS</button>
+          <button className="secondary import-button" onClick={() => importInput.current?.click()} disabled={!privileged}>Импорт JSON</button>
         </aside>
 
         <section className="sheet" id="sheet">
@@ -243,9 +293,9 @@ export default function Home() {
             <span className={dirty || message !== "Все изменения сохранены" ? "status dirty" : "status"}>{dirty ? "Есть несохранённые изменения" : message}</span>
           </div>
 
-          {privileged && <section className="master-panel">
+          {privileged && campaign && <section className="master-panel">
             <header><div><span className="eyebrow">Управление</span><h3>{profile === "Overseer" ? "Панель Overseer" : "Панель Мастера"}</h3></div><button className="secondary" onClick={addClassDraft}>+ Класс персонажа</button></header>
-            {activeProfile && <ManagementPanel actor={activeProfile} profiles={profiles} characters={characters} onChanged={() => loadWorkspace(activeProfile.id)} onMessage={setMessage}/>} 
+            {activeProfile && <ManagementPanel key={`${activeProfile.id}:${campaign.id}`} actor={activeProfile} campaign={campaign} profiles={profiles} characters={characters} onChanged={() => loadWorkspace(activeProfile.id, campaign.id)} onCampaignCreated={(campaignId) => loadWorkspace(activeProfile.id, campaignId)} onMessage={setMessage}/>}
             <div className="system-fields">
               <label>Имя<input value={character.name} onChange={(event) => setCharacter({ ...character, name: event.target.value })}/></label>
               <label>Тип<select value={character.kind} onChange={(event) => setCharacter({ ...character, kind: event.target.value })}><option value="PC">PC</option><option value="NPC">NPC</option></select></label>
@@ -277,7 +327,7 @@ export default function Home() {
                 <div className="vital"><span>Скорость</span><strong>{character.speed} <small>фт.</small></strong></div>
                 <div className="vital"><span>Инициатива</span><strong>+1</strong></div>
               </div>
-              <div className="death-saves"><span>Спасброски от смерти</span><label>Успехи ○ ○ ○</label><label>Провалы ○ ○ ○</label></div>
+              <div className="death-saves"><span>Спасброски от смерти</span><div>Успехи ○ ○ ○</div><div>Провалы ○ ○ ○</div></div>
             </section>
 
             <section className="panel skills">
@@ -294,7 +344,7 @@ export default function Home() {
               <header><h3>Особенности</h3><span>Управляет Мастер</span></header>
               {sections.features.map((feature, index) => <div className="feature" key={`${feature.name}-${index}`}>{privileged ? <><input value={feature.name} onChange={(event) => setSections({ ...sections, features: sections.features.map((item, itemIndex) => itemIndex === index ? { ...item, name: event.target.value } : item) })}/><textarea rows={2} value={feature.description} onChange={(event) => setSections({ ...sections, features: sections.features.map((item, itemIndex) => itemIndex === index ? { ...item, description: event.target.value } : item) })}/></> : <><strong>{feature.name}</strong><p>{feature.description}</p></>}</div>)}
               {privileged && <button className="inline-add" onClick={() => setSections({ ...sections, features: [...sections.features, { name: "Новая особенность", description: "" }] })}>+ Особенность</button>}
-              {resources.map((resource) => <div className="resource-row" key={resource.id}><span>{resource.name}</span><button disabled={resource.spent <= 0} onClick={() => setResources(resources.map((item) => item.id === resource.id ? { ...item, spent: item.spent - 1 } : item))}>−</button><strong>{resource.maximum - resource.spent} / {resource.maximum}</strong><button disabled={resource.spent >= resource.maximum} onClick={() => setResources(resources.map((item) => item.id === resource.id ? { ...item, spent: item.spent + 1 } : item))}>+</button></div>)}
+              {resources.map((resource) => <div className="resource-row" key={resource.id}><span>{resource.name}</span><button aria-label={`Восстановить ресурс: ${resource.name}`} disabled={resource.spent <= 0} onClick={() => setResources(restoreCharacterResource(resources, resource.id))}>−</button><strong>{resource.maximum - resource.spent} / {resource.maximum}</strong><button aria-label={`Потратить ресурс: ${resource.name}`} disabled={resource.spent >= resource.maximum} onClick={() => setResources(spendCharacterResource(resources, resource.id))}>+</button></div>)}
             </section>
 
             <section className="panel attacks-panel">
@@ -321,7 +371,7 @@ export default function Home() {
               <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={4}/>
             </section>
 
-            {activeProfile && <Spellbook profileId={activeProfile.id} characterId={characterId} privileged={privileged} onMessage={setMessage}/>} 
+            {activeProfile && characterId && <Spellbook profileId={activeProfile.id} characterId={characterId} privileged={privileged} onMessage={setMessage}/>}
           </div>
         </section>
       </div>
@@ -329,7 +379,7 @@ export default function Home() {
       <footer className="savebar">
         <span>{dirty ? "Черновик хранится только на этом устройстве" : `Последнее сохранение · только что · ${profile}`}</span>
         <button className="secondary" disabled={!dirty} onClick={() => { setHp(saved.hp); setCoins(saved.coins); setNotes(saved.notes); setCharacter(savedCharacter); setClassesDetail(savedClasses); setSections(savedSections); setResources(savedResources); }}>Отменить</button>
-        <button className="primary" disabled={!dirty || saving} onClick={saveChanges}>{saving ? "Сохраняем…" : "Сохранить изменения"}</button>
+        <button className="primary" disabled={!characterId || !dirty || saving} onClick={saveChanges}>{saving ? "Сохраняем…" : "Сохранить изменения"}</button>
       </footer>
     </main>
   );

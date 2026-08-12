@@ -1,5 +1,6 @@
 import { env } from "cloudflare:workers";
 import { ensureDatabase } from "../../../db/bootstrap";
+import { createCampaignSchema, parseJsonBody } from "../../../domain/api-validation";
 
 export async function GET(request: Request) {
   await ensureDatabase();
@@ -13,14 +14,15 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   await ensureDatabase();
-  const body = await request.json() as { actorProfileId?: string; name?: string; description?: string };
+  const parsed = await parseJsonBody(request, createCampaignSchema);
+  if (!parsed.success) return parsed.response;
+  const body = parsed.data;
   const actor = await env.DB.prepare("SELECT id FROM profiles WHERE id=?").bind(body.actorProfileId).first();
   if (!actor) return Response.json({ error: "Профиль не найден" }, { status: 404 });
-  const name = body.name?.trim();
-  if (!name) return Response.json({ error: "Название кампании обязательно" }, { status: 400 });
+  const name = body.name;
   const id = crypto.randomUUID();
   await env.DB.batch([
-    env.DB.prepare("INSERT INTO campaigns (id,name,description) VALUES (?,?,?)").bind(id, name, body.description?.trim() ?? ""),
+    env.DB.prepare("INSERT INTO campaigns (id,name,description) VALUES (?,?,?)").bind(id, name, body.description),
     env.DB.prepare("INSERT INTO campaign_members (campaign_id,profile_id,role) VALUES (?,?,?)").bind(id, body.actorProfileId, "GM"),
   ]);
   return Response.json({ id, name }, { status: 201 });

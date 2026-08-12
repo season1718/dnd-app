@@ -1,5 +1,6 @@
 import { env } from "cloudflare:workers";
 import { ensureDatabase } from "../../../../../db/bootstrap";
+import { parseJsonBody, updateCampaignMemberSchema } from "../../../../../domain/api-validation";
 
 async function canManage(campaignId: string, profileId: string | undefined) {
   return env.DB.prepare(`SELECT p.global_role AS globalRole,cm.role AS campaignRole FROM profiles p LEFT JOIN campaign_members cm ON cm.profile_id=p.id AND cm.campaign_id=? WHERE p.id=?`).bind(campaignId, profileId).first<{ globalRole: string; campaignRole: string | null }>();
@@ -18,11 +19,12 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
 export async function PUT(request: Request, context: { params: Promise<{ id: string }> }) {
   await ensureDatabase();
   const { id } = await context.params;
-  const body = await request.json() as { actorProfileId?: string; profileId?: string; role?: string };
+  const parsed = await parseJsonBody(request, updateCampaignMemberSchema);
+  if (!parsed.success) return parsed.response;
+  const body = parsed.data;
   const access = await canManage(id, body.actorProfileId);
   if (!access || (access.globalRole !== "OVERSEER" && access.campaignRole !== "GM")) return Response.json({ error: "Управлять участниками может Мастер или Overseer" }, { status: 403 });
-  if (!body.profileId) return Response.json({ error: "Профиль не указан" }, { status: 400 });
-  await env.DB.prepare(`INSERT INTO campaign_members (campaign_id,profile_id,role) VALUES (?,?,?) ON CONFLICT(campaign_id,profile_id) DO UPDATE SET role=excluded.role`).bind(id, body.profileId, body.role === "GM" ? "GM" : "PLAYER").run();
+  await env.DB.prepare(`INSERT INTO campaign_members (campaign_id,profile_id,role) VALUES (?,?,?) ON CONFLICT(campaign_id,profile_id) DO UPDATE SET role=excluded.role`).bind(id, body.profileId, body.role).run();
   return Response.json({ ok: true });
 }
 

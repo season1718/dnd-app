@@ -1,0 +1,1 @@
+ALTER TABLE `characters` ADD `spellbook_revision` text DEFAULT '' NOT NULL;
