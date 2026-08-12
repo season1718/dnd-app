@@ -22,11 +22,25 @@ export type ImportedCharacter = {
   warnings: string[];
 };
 
-type AnyRecord = Record<string, any>;
+type AnyRecord = Record<string, unknown>;
 
 function record(value: unknown, label: string): AnyRecord {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error(`${label}: ожидался объект`);
   return value as AnyRecord;
+}
+
+function maybeRecord(value: unknown): AnyRecord | undefined {
+  return value && typeof value === "object" && !Array.isArray(value) ? value as AnyRecord : undefined;
+}
+
+function path(value: unknown, ...keys: string[]): unknown {
+  let current = value;
+  for (const key of keys) {
+    const object = maybeRecord(current);
+    if (!object) return undefined;
+    current = object[key];
+  }
+  return current;
 }
 
 function number(value: unknown, fallback = 0) {
@@ -56,12 +70,12 @@ function richTextToPlain(value: unknown): string {
   return [own, ...children].filter(Boolean).join(node.type === "paragraph" || node.type === "taskItem" ? "\n" : "").trim();
 }
 
-function fieldValue(parent: AnyRecord | undefined, key: string, fallback: unknown = "") {
-  return parent?.[key]?.value ?? fallback;
+function fieldValue(parent: unknown, key: string, fallback: unknown = "") {
+  return path(parent, key, "value") ?? fallback;
 }
 
 function readEquipment(sheet: AnyRecord): string[] {
-  const content = sheet.text?.equipment?.value?.data?.content;
+  const content = path(sheet, "text", "equipment", "value", "data", "content");
   if (!Array.isArray(content)) return [];
   const values: string[] = [];
   const visit = (node: unknown) => {
@@ -83,7 +97,7 @@ function readNotes(sheet: AnyRecord) {
   const blocks = sheet.text ?? {};
   for (const [key, block] of Object.entries(blocks)) {
     if (!key.startsWith("notes-") && !["traits", "background", "allies", "quests", "features"].includes(key)) continue;
-    const raw = (block as AnyRecord)?.value?.data;
+    const raw = path(block, "value", "data");
     const parsed = richTextToPlain(raw);
     if (parsed) notes.push({ title: key, text: parsed });
   }
@@ -100,39 +114,39 @@ export function parseLongStoryShortV2(input: unknown): ImportedCharacter {
 
   const charClass = text(fieldValue(sheet.info, "charClass")) || "Неизвестный класс";
   const level = Math.max(1, Math.trunc(number(fieldValue(sheet.info, "level"), 1)));
-  const vitality = sheet.vitality ?? {};
-  const stats = sheet.stats ?? {};
-  const coins = sheet.coins ?? {};
+  const vitality = maybeRecord(sheet.vitality) ?? {};
+  const stats = maybeRecord(sheet.stats) ?? {};
+  const coins = maybeRecord(sheet.coins) ?? {};
   const warnings: string[] = [];
   if (sheet.spells && !Array.isArray(sheet.spells)) warnings.push("Текстовые блоки заклинаний сохранены отдельно от каталога и не импортированы как заклинания.");
   if (Array.isArray(sheet.weaponsList) && sheet.weaponsList.length) warnings.push("Оружие перенесено в снаряжение; структурированные атаки будут добавлены следующим форматом импорта.");
 
   const equipment = readEquipment(sheet);
-  for (const weapon of sheet.weaponsList ?? []) {
-    const label = [text(weapon?.name?.value), text(weapon?.dmg?.value)].filter(Boolean).join(" — ");
+  for (const weapon of Array.isArray(sheet.weaponsList) ? sheet.weaponsList : []) {
+    const label = [text(path(weapon, "name", "value")), text(path(weapon, "dmg", "value"))].filter(Boolean).join(" — ");
     if (label && !equipment.includes(label)) equipment.push(label);
   }
 
   return {
-    name: text(sheet.name?.value) || "Безымянный персонаж",
+    name: text(path(sheet, "name", "value")) || "Безымянный персонаж",
     kind: "PC",
     species: text(fieldValue(sheet.info, "race")),
     background: text(fieldValue(sheet.info, "background")),
     alignment: text(fieldValue(sheet.info, "alignment")),
     experience: Math.max(0, Math.trunc(number(fieldValue(sheet.info, "experience")))),
     abilities: {
-      strength: number(stats.str?.score, 10), dexterity: number(stats.dex?.score, 10),
-      constitution: number(stats.con?.score, 10), intelligence: number(stats.int?.score, 10),
-      wisdom: number(stats.wis?.score, 10), charisma: number(stats.cha?.score, 10),
+      strength: number(path(stats, "str", "score"), 10), dexterity: number(path(stats, "dex", "score"), 10),
+      constitution: number(path(stats, "con", "score"), 10), intelligence: number(path(stats, "int", "score"), 10),
+      wisdom: number(path(stats, "wis", "score"), 10), charisma: number(path(stats, "cha", "score"), 10),
     },
-    armorClass: number(vitality.ac?.value, 10), speed: number(vitality.speed?.value, 30),
-    maximumHp: Math.max(1, number(vitality["hp-max"]?.value, 1)),
-    currentHp: Math.max(0, number(vitality["hp-current"]?.value, 1)),
-    temporaryHp: Math.max(0, number(vitality["hp-temp"]?.value)),
+    armorClass: number(path(vitality, "ac", "value"), 10), speed: number(path(vitality, "speed", "value"), 30),
+    maximumHp: Math.max(1, number(path(vitality, "hp-max", "value"), 1)),
+    currentHp: Math.max(0, number(path(vitality, "hp-current", "value"), 1)),
+    temporaryHp: Math.max(0, number(path(vitality, "hp-temp", "value"))),
     deathSuccesses: Math.max(0, Math.min(3, number(sheet.deathSuccesses ?? vitality.deathSuccesses))),
     deathFailures: Math.max(0, Math.min(3, number(sheet.deathFails ?? vitality.deathFails))),
     inspiration: Boolean(sheet.inspiration),
-    coins: { cp: number(coins.cp?.value), sp: number(coins.sp?.value), ep: number(coins.ep?.value), gp: number(coins.gp?.value), pp: number(coins.pp?.value) },
+    coins: { cp: number(path(coins, "cp", "value")), sp: number(path(coins, "sp", "value")), ep: number(path(coins, "ep", "value")), gp: number(path(coins, "gp", "value")), pp: number(path(coins, "pp", "value")) },
     equipment, notes: readNotes(sheet),
     classes: [{ classKey: charClass.toLocaleLowerCase("ru").replace(/\s+/g, "-"), className: charClass, subclassName: text(fieldValue(sheet.info, "charSubclass")), level }],
     resources: [], warnings,

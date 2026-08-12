@@ -1,10 +1,12 @@
 import { env } from "cloudflare:workers";
 import { ensureDatabase } from "../../../db/bootstrap";
+import { ensureSpellCatalog } from "../../../domain/spell-catalog";
 
 const ids = { player: "profile-ori", gm: "profile-gm", overseer: "profile-overseer", campaign: "campaign-lss", character: "character-ori", npc: "character-mirena" };
 
 export async function GET(request: Request) {
   await ensureDatabase();
+  await ensureSpellCatalog();
   const existing = await env.DB.prepare("SELECT id FROM profiles LIMIT 1").first();
   if (!existing) {
     await env.DB.batch([
@@ -27,29 +29,37 @@ export async function GET(request: Request) {
     env.DB.prepare(`INSERT OR IGNORE INTO character_resources (id,character_id,name,maximum,spent,reset_on) VALUES (?,?,?,?,?,?)`).bind("resource-mirena-channel", ids.npc, "Божественный канал", 2, 0, "SHORT_REST"),
     env.DB.prepare(`INSERT OR IGNORE INTO spell_slot_pools (character_id,pool,level,maximum,spent) VALUES (?,?,?,?,?)`).bind(ids.npc, "STANDARD", 1, 4, 0),
     env.DB.prepare(`INSERT OR IGNORE INTO spell_slot_pools (character_id,pool,level,maximum,spent) VALUES (?,?,?,?,?)`).bind(ids.npc, "STANDARD", 2, 2, 0),
-    env.DB.prepare(`INSERT OR IGNORE INTO spells (id,name_en,name_ru,level,school,casting_time,range,components,duration,classes_json,description,source) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`).bind("spell-cure-wounds", "Cure Wounds", "Лечение ран", 1, "Abjuration", "Действие", "Касание", "V, S", "Мгновенно", '["Cleric","Druid","Bard"]', "Восстанавливает хиты существу, которого касается заклинатель.", "REFERENCE"),
-    env.DB.prepare(`INSERT OR IGNORE INTO spells (id,name_en,name_ru,level,school,casting_time,range,components,duration,classes_json,description,source) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`).bind("spell-guiding-bolt", "Guiding Bolt", "Направляющий снаряд", 1, "Evocation", "Действие", "120 фт.", "V, S", "1 раунд", '["Cleric"]', "Луч наносит урон и помогает следующей атаке по цели.", "REFERENCE"),
-    env.DB.prepare(`INSERT OR IGNORE INTO spells (id,name_en,name_ru,level,school,casting_time,range,components,duration,classes_json,description,source) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`).bind("spell-spiritual-weapon", "Spiritual Weapon", "Духовное оружие", 2, "Evocation", "Бонусное действие", "60 фт.", "V, S", "1 минута", '["Cleric"]', "Создаёт магическое оружие, которым можно атаковать на расстоянии.", "REFERENCE"),
-    env.DB.prepare(`INSERT OR IGNORE INTO character_spells (character_id,spell_id,known,prepared,always_prepared) VALUES (?,?,?,?,?)`).bind(ids.npc, "spell-cure-wounds", 1, 1, 0),
-    env.DB.prepare(`INSERT OR IGNORE INTO character_spells (character_id,spell_id,known,prepared,always_prepared) VALUES (?,?,?,?,?)`).bind(ids.npc, "spell-guiding-bolt", 1, 1, 0),
-    env.DB.prepare(`INSERT OR IGNORE INTO character_spells (character_id,spell_id,known,prepared,always_prepared) VALUES (?,?,?,?,?)`).bind(ids.npc, "spell-spiritual-weapon", 1, 0, 0),
+    env.DB.prepare(`INSERT OR IGNORE INTO character_spells (character_id,spell_id,known,prepared,always_prepared) VALUES (?,?,?,?,?)`).bind(ids.npc, "phb2024-cure-wounds", 1, 1, 0),
+    env.DB.prepare(`INSERT OR IGNORE INTO character_spells (character_id,spell_id,known,prepared,always_prepared) VALUES (?,?,?,?,?)`).bind(ids.npc, "phb2024-guiding-bolt", 1, 1, 0),
+    env.DB.prepare(`INSERT OR IGNORE INTO character_spells (character_id,spell_id,known,prepared,always_prepared) VALUES (?,?,?,?,?)`).bind(ids.npc, "phb2024-spiritual-weapon", 1, 0, 0),
+    env.DB.prepare(`DELETE FROM spells WHERE source='REFERENCE' AND id IN ('spell-cure-wounds','spell-guiding-bolt','spell-spiritual-weapon')`),
     env.DB.prepare(`INSERT OR IGNORE INTO character_sections (character_id,section,data_json) VALUES (?,?,?)`).bind(ids.npc, "spellcasting", '{"preparedLimit":6}'),
   ]);
 
   const profiles = (await env.DB.prepare("SELECT id,name,global_role AS globalRole FROM profiles ORDER BY name").all()).results;
-  const profileId = new URL(request.url).searchParams.get("profileId") ?? ids.player;
+  const url = new URL(request.url);
+  const profileId = url.searchParams.get("profileId") ?? ids.player;
   const profile = await env.DB.prepare("SELECT global_role AS globalRole FROM profiles WHERE id=?").bind(profileId).first<{ globalRole: string }>();
-  const membership = await env.DB.prepare("SELECT role FROM campaign_members WHERE campaign_id=? AND profile_id=?").bind(ids.campaign, profileId).first<{ role: string }>();
+  if (!profile) return Response.json({ error: "Профиль не найден" }, { status: 404 });
+  const campaigns = profile.globalRole === "OVERSEER"
+    ? (await env.DB.prepare("SELECT id,name,description,NULL AS role FROM campaigns ORDER BY name").all()).results
+    : (await env.DB.prepare("SELECT c.id,c.name,c.description,cm.role FROM campaigns c JOIN campaign_members cm ON cm.campaign_id=c.id WHERE cm.profile_id=? ORDER BY c.name").bind(profileId).all()).results;
+  const requestedCampaignId = url.searchParams.get("campaignId");
+  const campaign = campaigns.find((item) => item.id === requestedCampaignId) ?? campaigns[0] ?? null;
+  if (!campaign) return Response.json({ profiles, campaigns: [], campaign: null, characters: [], character: null, permissions: { privileged: profile.globalRole === "OVERSEER" } });
+  const campaignId = String(campaign.id);
+  const membership = await env.DB.prepare("SELECT role FROM campaign_members WHERE campaign_id=? AND profile_id=?").bind(campaignId, profileId).first<{ role: string }>();
   const privileged = profile?.globalRole === "OVERSEER" || membership?.role === "GM";
   const characters = privileged
-    ? (await env.DB.prepare(`SELECT c.id,c.name,c.kind,c.species,COALESCE(SUM(cc.level),0) AS level,GROUP_CONCAT(cc.class_name, ' / ') AS classes FROM characters c LEFT JOIN character_classes cc ON cc.character_id=c.id WHERE c.campaign_id=? GROUP BY c.id ORDER BY c.kind,c.name`).bind(ids.campaign).all()).results
-    : (await env.DB.prepare(`SELECT c.id,c.name,c.kind,c.species,COALESCE(SUM(cc.level),0) AS level,GROUP_CONCAT(cc.class_name, ' / ') AS classes FROM characters c JOIN character_assignments ca ON ca.character_id=c.id LEFT JOIN character_classes cc ON cc.character_id=c.id WHERE c.campaign_id=? AND ca.profile_id=? GROUP BY c.id ORDER BY c.name`).bind(ids.campaign, profileId).all()).results;
-  const firstCharacterId = String(characters[0]?.id ?? ids.character);
+    ? (await env.DB.prepare(`SELECT c.id,c.name,c.kind,c.species,COALESCE(SUM(cc.level),0) AS level,GROUP_CONCAT(cc.class_name, ' / ') AS classes FROM characters c LEFT JOIN character_classes cc ON cc.character_id=c.id WHERE c.campaign_id=? GROUP BY c.id ORDER BY c.kind,c.name`).bind(campaignId).all()).results
+    : (await env.DB.prepare(`SELECT c.id,c.name,c.kind,c.species,COALESCE(SUM(cc.level),0) AS level,GROUP_CONCAT(cc.class_name, ' / ') AS classes FROM characters c JOIN character_assignments ca ON ca.character_id=c.id LEFT JOIN character_classes cc ON cc.character_id=c.id WHERE c.campaign_id=? AND ca.profile_id=? GROUP BY c.id ORDER BY c.name`).bind(campaignId, profileId).all()).results;
+  const firstCharacterId = characters[0]?.id ? String(characters[0].id) : null;
+  if (!firstCharacterId) return Response.json({ profiles, campaigns, permissions: { privileged }, campaign, characters, character: null });
   const character = await env.DB.prepare("SELECT * FROM characters WHERE id=?").bind(firstCharacterId).first();
   const classes = (await env.DB.prepare("SELECT class_key AS classKey,class_name AS className,subclass_name AS subclassName,level FROM character_classes WHERE character_id=?").bind(firstCharacterId).all()).results;
   const resources = (await env.DB.prepare("SELECT id,name,maximum,spent,reset_on AS resetOn FROM character_resources WHERE character_id=? ORDER BY name").bind(firstCharacterId).all()).results;
   const spellSlots = (await env.DB.prepare("SELECT pool,level,maximum,spent FROM spell_slot_pools WHERE character_id=? ORDER BY pool,level").bind(firstCharacterId).all()).results;
   const sectionRows = (await env.DB.prepare("SELECT section,data_json AS dataJson FROM character_sections WHERE character_id=?").bind(firstCharacterId).all()).results as Array<{ section: string; dataJson: string }>;
   const sections = Object.fromEntries(sectionRows.map((row) => [row.section, JSON.parse(row.dataJson)]));
-  return Response.json({ profiles, characters, permissions: { privileged }, campaign: { id: ids.campaign, name: "Long Story Short", description: "Туманный город" }, character: { ...character, classes, resources, spellSlots, sections } });
+  return Response.json({ profiles, campaigns, characters, permissions: { privileged }, campaign, character: { ...character, classes, resources, spellSlots, sections } });
 }

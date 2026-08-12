@@ -1,0 +1,1 @@
+ALTER TABLE `characters` ADD `revision` text DEFAULT '' NOT NULL;

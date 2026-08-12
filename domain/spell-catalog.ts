@@ -12,11 +12,10 @@ function componentsText(spell: CatalogSpell) {
 
 export async function ensureSpellCatalog() {
   if (ready) return;
-  const existing = await env.DB.prepare("SELECT COUNT(*) AS count FROM spells WHERE source=?").bind(SOURCE).first<{ count: number }>();
-  if (Number(existing?.count ?? 0) !== catalog.spells.length) {
-    const statements = catalog.spells.map((spell) => env.DB.prepare(`INSERT INTO spells (id,name_en,name_ru,level,school,casting_time,range,components,duration,classes_json,description,source) VALUES (?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET name_en=excluded.name_en,name_ru=excluded.name_ru,level=excluded.level,school=excluded.school,casting_time=excluded.casting_time,range=excluded.range,components=excluded.components,duration=excluded.duration,classes_json=excluded.classes_json,description=excluded.description,source=excluded.source,updated_at=CURRENT_TIMESTAMP`).bind(`phb2024-${spell.id}`, spell.name_en, spell.name_ru, spell.level, spell.school, spell.casting_time, spell.range, componentsText(spell), spell.duration, JSON.stringify(spell.classes), spell.description, SOURCE));
-    for (let index = 0; index < statements.length; index += 75) await env.DB.batch(statements.slice(index, index + 75));
-  }
+  // Base catalog rows are refreshed on every new server process. User edits live in
+  // spell_overrides, so refreshing source data cannot erase them.
+  const statements = catalog.spells.map((spell) => env.DB.prepare(`INSERT INTO spells (id,name_en,name_ru,level,school,casting_time,range,components,duration,classes_json,description,source,source_book,source_page) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET name_en=excluded.name_en,name_ru=excluded.name_ru,level=excluded.level,school=excluded.school,casting_time=excluded.casting_time,range=excluded.range,components=excluded.components,duration=excluded.duration,classes_json=excluded.classes_json,description=excluded.description,source=excluded.source,source_book=excluded.source_book,source_page=excluded.source_page,updated_at=CURRENT_TIMESTAMP`).bind(`phb2024-${spell.id}`, spell.name_en, spell.name_ru, spell.level, spell.school, spell.casting_time, spell.range, componentsText(spell), spell.duration, JSON.stringify(spell.classes), spell.description, SOURCE, spell.source.book, spell.source.page));
+  for (let index = 0; index < statements.length; index += 75) await env.DB.batch(statements.slice(index, index + 75));
   ready = true;
 }
 

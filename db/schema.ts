@@ -54,6 +54,8 @@ export const characters = sqliteTable("characters", {
   equipmentJson: text("equipment_json").notNull().default("[]"),
   notesJson: text("notes_json").notNull().default("[]"),
   source: text("source").notNull().default("DND_COMPANION"),
+  revision: text("revision").notNull().default(""),
+  spellbookRevision: text("spellbook_revision").notNull().default(""),
   ...timestamps,
 });
 
@@ -100,9 +102,20 @@ export const spells = sqliteTable("spells", {
   classesJson: text("classes_json").notNull().default("[]"),
   description: text("description").notNull().default(""),
   source: text("source").notNull().default("CUSTOM"),
+  sourceBook: text("source_book").notNull().default(""),
+  sourcePage: integer("source_page"),
   createdByProfileId: text("created_by_profile_id").references(() => profiles.id),
   ...timestamps,
 }, (table) => [uniqueIndex("idx_spells_name_en_source").on(table.nameEn, table.source), index("idx_spells_level_school").on(table.level, table.school)]);
+
+export const spellOverrides = sqliteTable("spell_overrides", {
+  spellId: text("spell_id").primaryKey().references(() => spells.id, { onDelete: "cascade" }),
+  patchJson: text("patch_json").notNull().default("{}"),
+  baseSnapshotJson: text("base_snapshot_json").notNull().default("{}"),
+  baseCatalogVersion: text("base_catalog_version").notNull().default(""),
+  updatedByProfileId: text("updated_by_profile_id").references(() => profiles.id),
+  ...timestamps,
+});
 
 export const characterSpells = sqliteTable("character_spells", {
   characterId: text("character_id").notNull().references(() => characters.id, { onDelete: "cascade" }),
