@@ -63,22 +63,18 @@ test.after(async () => {
 
 test("enforces roles, revisions, transfer safety, and campaign isolation through HTTP", async () => {
   await request("/api/bootstrap?profileId=profile-overseer");
-  const oriBeforeResource = await request("/api/characters/character-ori?profileId=profile-ori");
-  const oriResource = oriBeforeResource.resources.find((resource) => resource.id === "resource-second-wind");
-  const oriResourceSave = await request("/api/characters/character-ori", json("PATCH", { profileId: "profile-ori", expectedRevision: oriBeforeResource.revision, currentHp: oriBeforeResource.current_hp, coins: { gp: JSON.parse(oriBeforeResource.coins_json).gp }, notes: JSON.parse(oriBeforeResource.notes_json)[0] ?? "", system: { name: "Взлом", kind: "NPC", species: "", background: "", alignment: "", experience: 0, armorClass: 99, speed: 0, maximumHp: 99, strength: 30, dexterity: 30, constitution: 30, intelligence: 30, wisdom: 30, charisma: 30 }, resources: [{ ...oriResource, maximum: 999, spent: 1 }] }));
-  const oriAfterSpend = await request("/api/characters/character-ori?profileId=profile-ori");
-  assert.equal(oriAfterSpend.name, oriBeforeResource.name);
-  assert.equal(oriAfterSpend.resources.find((resource) => resource.id === oriResource.id).maximum, oriResource.maximum);
-  assert.equal(oriAfterSpend.resources.find((resource) => resource.id === oriResource.id).spent, 1);
-  await request("/api/characters/character-ori", json("PATCH", { profileId: "profile-ori", expectedRevision: oriResourceSave.revision, currentHp: oriBeforeResource.current_hp, coins: { gp: JSON.parse(oriBeforeResource.coins_json).gp }, notes: JSON.parse(oriBeforeResource.notes_json)[0] ?? "", resources: [{ ...oriResource }] }));
-  const mirenaBook = await request("/api/spells?profileId=profile-gm&characterId=character-mirena");
-  const spentSlots = mirenaBook.slots.map((slot, index) => index === 0 ? { ...slot, spent: Math.min(slot.maximum, slot.spent + 1) } : slot);
-  const spentBook = await request("/api/characters/character-mirena/spellbook", json("PUT", { profileId: "profile-gm", expectedRevision: mirenaBook.revision, preparedLimit: mirenaBook.preparedLimit, spells: mirenaBook.spells.map((spell) => ({ spellId: spell.id, known: Boolean(spell.known), prepared: Boolean(spell.prepared) })), slots: spentSlots }));
-  const afterSpend = await request("/api/spells?profileId=profile-gm&characterId=character-mirena");
-  assert.equal(afterSpend.slots[0].spent, spentSlots[0].spent);
-  await request("/api/characters/character-mirena/spellbook", json("PUT", { profileId: "profile-gm", expectedRevision: spentBook.revision, preparedLimit: mirenaBook.preparedLimit, spells: mirenaBook.spells.map((spell) => ({ spellId: spell.id, known: Boolean(spell.known), prepared: Boolean(spell.prepared) })), slots: mirenaBook.slots }));
+  // Seed characters are intentionally deletable, so integration scenarios must
+  // create their own fixtures instead of depending on Ori or Mirena.
   const suffix = crypto.randomUUID().slice(0, 8);
   const outsider = await request("/api/profiles", json("POST", { actorProfileId: "profile-overseer", name: `Тестовый игрок ${suffix}` }), 201);
+  const disposableProfile = await request("/api/profiles", json("POST", { actorProfileId: "profile-overseer", name: `Удаляемый профиль ${suffix}`, globalRole: "OVERSEER" }), 201);
+  const disposableSpell = await request("/api/spells", json("POST", { actorProfileId: disposableProfile.id, nameEn: `Disposable Spell ${suffix}`, nameRu: "Удаляемая авторская ссылка", level: 0, school: "воплощение", castingTime: "1 действие", range: "На себя", components: "В", duration: "Мгновенно", classes: [], description: "Проверка удаления профиля-автора." }), 201);
+  await request(`/api/profiles/${disposableProfile.id}?actorProfileId=profile-gm`, { method: "DELETE" }, 403);
+  await request(`/api/profiles/${disposableProfile.id}?actorProfileId=profile-overseer`, { method: "DELETE" });
+  const profilesAfterDeletion = await request("/api/profiles");
+  assert.equal(profilesAfterDeletion.profiles.some((profile) => profile.id === disposableProfile.id), false);
+  await request(`/api/spells/${disposableSpell.id}?actorProfileId=profile-overseer`, { method: "DELETE" });
+  await request("/api/profiles/profile-overseer?actorProfileId=profile-overseer", { method: "DELETE" }, 409);
   let campaignId;
   let linkedCustomSpellId;
   try {
@@ -92,6 +88,10 @@ test("enforces roles, revisions, transfer safety, and campaign isolation through
     const playerWorkspace = await request(`/api/bootstrap?profileId=${outsider.id}&campaignId=${campaignId}`);
     assert.deepEqual(new Set(playerWorkspace.characters.map((character) => character.id)), new Set([first.id, second.id]));
     await request(`/api/characters/${first.id}?profileId=profile-ori`, {}, 403);
+    await request(`/api/characters/${second.id}?profileId=profile-gm`, { method: "DELETE" });
+    const afterCharacterDeletion = await request(`/api/bootstrap?profileId=${outsider.id}&campaignId=${campaignId}`);
+    assert.deepEqual(afterCharacterDeletion.characters.map((character) => character.id), [first.id]);
+    assert.equal(afterCharacterDeletion.character.id, first.id);
 
     const original = await request(`/api/characters/${first.id}?profileId=${outsider.id}`);
     const playerSave = { profileId: outsider.id, expectedRevision: original.revision, currentHp: 1, coins: { gp: 7 }, notes: "Интеграционный черновик" };

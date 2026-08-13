@@ -32,19 +32,45 @@ function parseJson<T>(value: string | undefined, fallback: T): T {
   catch { return fallback; }
 }
 
+const standardSkills: SheetSections["skills"] = [
+  { name: "Акробатика", ability: "dexterity", proficient: false, expertise: false },
+  { name: "Анализ", ability: "intelligence", proficient: false, expertise: false },
+  { name: "Атлетика", ability: "strength", proficient: true, expertise: false },
+  { name: "Внимательность", ability: "wisdom", proficient: true, expertise: false },
+  { name: "Выживание", ability: "wisdom", proficient: false, expertise: false },
+  { name: "Выступление", ability: "charisma", proficient: false, expertise: false },
+  { name: "Запугивание", ability: "charisma", proficient: true, expertise: false },
+  { name: "История", ability: "intelligence", proficient: false, expertise: false },
+  { name: "Ловкость рук", ability: "dexterity", proficient: false, expertise: false },
+  { name: "Магия", ability: "intelligence", proficient: false, expertise: false },
+  { name: "Медицина", ability: "wisdom", proficient: false, expertise: false },
+  { name: "Обман", ability: "charisma", proficient: false, expertise: false },
+  { name: "Природа", ability: "intelligence", proficient: false, expertise: false },
+  { name: "Проницательность", ability: "wisdom", proficient: false, expertise: false },
+  { name: "Религия", ability: "intelligence", proficient: false, expertise: false },
+  { name: "Скрытность", ability: "dexterity", proficient: false, expertise: false },
+  { name: "Убеждение", ability: "charisma", proficient: false, expertise: false },
+  { name: "Уход за животными", ability: "wisdom", proficient: false, expertise: false },
+];
+const standardSkillNames = new Set(standardSkills.map((skill) => skill.name.toLocaleLowerCase("ru")));
+
+function withStandardSkills(stored: SheetSections["skills"] | undefined) {
+  if (!stored?.length) return standardSkills.map((skill) => ({ ...skill }));
+  const byName = new Map(stored.map((skill) => [skill.name.trim().toLocaleLowerCase("ru"), skill]));
+  return [
+    ...standardSkills.map((skill) => ({ ...skill, ...byName.get(skill.name.toLocaleLowerCase("ru")), name: skill.name, ability: skill.ability })),
+    ...stored.filter((skill) => !standardSkillNames.has(skill.name.trim().toLocaleLowerCase("ru"))),
+  ];
+}
+
 const defaultSections: SheetSections = {
-  skills: [
-    { name: "Атлетика", ability: "strength", proficient: true, expertise: false },
-    { name: "Акробатика", ability: "dexterity", proficient: false, expertise: false },
-    { name: "Внимательность", ability: "wisdom", proficient: true, expertise: false },
-    { name: "Запугивание", ability: "charisma", proficient: true, expertise: false },
-  ],
-  saves: ["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"].map((ability) => ({ ability, proficient: ability === "strength" || ability === "constitution" })),
-  attacks: [{ name: "Двуручный меч", attackBonus: "+4", damage: "2к6 + 2 рубящий" }],
-  features: [{ name: "Второе дыхание", description: "Восстановление хитов бонусным действием." }],
-  proficiencies: ["Лёгкие, средние и тяжёлые доспехи", "Простое и воинское оружие"],
+  skills: standardSkills,
+  saves: ["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"].map((ability) => ({ ability, proficient: false })),
+  attacks: [],
+  features: [],
+  proficiencies: [],
   conditions: [],
-  hitDice: [{ die: "к10", maximum: 1, spent: 0 }],
+  hitDice: [],
 };
 
 export default function Home() {
@@ -106,35 +132,42 @@ export default function Home() {
     setResources(data.resources ?? []); setSavedResources(data.resources ?? []);
     const nextClasses = (data.classes ?? []).map((item) => ({ className: item.className, subclassName: item.subclassName ?? "", level: Number(item.level) }));
     setClassesDetail(nextClasses); setSavedClasses(nextClasses);
-    const nextSections = { ...defaultSections, ...(data.sections ?? {}) } as SheetSections;
+    const nextSections = { ...defaultSections, ...(data.sections ?? {}), skills: withStandardSkills(data.sections?.skills) } as SheetSections;
     setSections(nextSections); setSavedSections(nextSections);
     setHp(nextHp); setCoins(nextCoins); setNotes(nextNotes);
     setSaved({ hp: nextHp, coins: nextCoins, notes: nextNotes });
   }
 
-  function loadWorkspace(profileId = "profile-ori", campaignId?: string) {
+  async function loadWorkspace(profileId = "profile-ori", campaignId?: string, allowProfileRecovery = true) {
     const campaignQuery = campaignId ? `&campaignId=${encodeURIComponent(campaignId)}` : "";
-    fetch(`/api/bootstrap?profileId=${encodeURIComponent(profileId)}${campaignQuery}`)
-      .then((response) => {
-        if (!response.ok) throw new Error("Не удалось загрузить данные");
-        return response.json();
-      })
-      .then((data) => {
-        setProfiles(data.profiles);
-        setCampaigns(data.campaigns ?? []);
-        setCampaign(data.campaign ?? null);
-        setCanManage(Boolean(data.permissions?.privileged));
-        setCharacters(data.characters);
-        if (data.character) {
-          setCharacterId(data.character.id);
-          applyCharacter(data.character);
-          setMessage("Все изменения сохранены");
-        } else {
-          setCharacterId("");
-          setMessage(data.campaign ? "В этой кампании пока нет доступных персонажей" : "Для профиля нет доступных кампаний");
-        }
-      })
-      .catch(() => setMessage("Сервер данных недоступен"));
+    try {
+      const response = await fetch(`/api/bootstrap?profileId=${encodeURIComponent(profileId)}${campaignQuery}`);
+      if (response.status === 404 && allowProfileRecovery) {
+        const profileResponse = await fetch("/api/profiles");
+        const profileData = await profileResponse.json();
+        const fallback = profileData.profiles?.find((item: { globalRole?: string }) => item.globalRole === "OVERSEER") ?? profileData.profiles?.[0];
+        if (fallback) { setProfile(fallback.name); await loadWorkspace(fallback.id, undefined, false); return; }
+      }
+      if (!response.ok) throw new Error("Не удалось загрузить данные");
+      const data = await response.json();
+      setProfiles(data.profiles);
+      const selectedProfile = data.profiles.find((item: { id: string }) => item.id === profileId);
+      if (selectedProfile) setProfile(selectedProfile.name);
+      setCampaigns(data.campaigns ?? []);
+      setCampaign(data.campaign ?? null);
+      setCanManage(Boolean(data.permissions?.privileged));
+      setCharacters(data.characters);
+      if (data.character) {
+        setCharacterId(data.character.id);
+        applyCharacter(data.character);
+        setMessage("Все изменения сохранены");
+      } else {
+        setCharacterId("");
+        setMessage(data.campaign ? "В этой кампании пока нет доступных персонажей" : "Для профиля нет доступных кампаний");
+      }
+    } catch {
+      setMessage("Сервер данных недоступен");
+    }
   }
 
   useEffect(() => {
@@ -331,32 +364,34 @@ export default function Home() {
             </section>
 
             <section className="panel skills">
-              <header><h3>Навыки</h3><span>Бонус мастерства +{proficiencyBonus}</span></header>
-              {sections.skills.map((skill, index) => <div className="skill" key={`${skill.name}-${index}`}>
+              <header><h3>Навыки</h3></header>
+              <div className="skill-grid">{sections.skills.map((skill, index) => <div className={skill.proficient ? "skill proficient" : "skill"} key={`${skill.name}-${index}`}>
                 <button className={skill.proficient ? "prof-dot filled" : "prof-dot"} disabled={!privileged} aria-label={`Владение: ${skill.name}`} onClick={() => setSections({ ...sections, skills: sections.skills.map((item, itemIndex) => itemIndex === index ? { ...item, proficient: !item.proficient } : item) })}/>
-                {privileged ? <input value={skill.name} onChange={(event) => setSections({ ...sections, skills: sections.skills.map((item, itemIndex) => itemIndex === index ? { ...item, name: event.target.value } : item) })}/> : <span>{skill.name}</span>}
+                {privileged && !standardSkillNames.has(skill.name.trim().toLocaleLowerCase("ru")) ? <input value={skill.name} onChange={(event) => setSections({ ...sections, skills: sections.skills.map((item, itemIndex) => itemIndex === index ? { ...item, name: event.target.value } : item) })}/> : <span>{skill.name}</span>}
                 <strong>{skillBonus(skill) >= 0 ? "+" : ""}{skillBonus(skill)}</strong>
-              </div>)}
+              </div>)}</div>
               {privileged && <button className="inline-add" onClick={() => setSections({ ...sections, skills: [...sections.skills, { name: "Новый навык", ability: "wisdom", proficient: false, expertise: false }] })}>+ Навык</button>}
             </section>
 
             <section className="panel" id="features">
               <header><h3>Особенности</h3><span>Управляет Мастер</span></header>
-              {sections.features.map((feature, index) => <div className="feature" key={`${feature.name}-${index}`}>{privileged ? <><input value={feature.name} onChange={(event) => setSections({ ...sections, features: sections.features.map((item, itemIndex) => itemIndex === index ? { ...item, name: event.target.value } : item) })}/><textarea rows={2} value={feature.description} onChange={(event) => setSections({ ...sections, features: sections.features.map((item, itemIndex) => itemIndex === index ? { ...item, description: event.target.value } : item) })}/></> : <><strong>{feature.name}</strong><p>{feature.description}</p></>}</div>)}
+              {!sections.features.length && !resources.length && <p className="section-empty">Особенности не добавлены</p>}
+              {sections.features.map((feature, index) => <div className="feature" key={`${feature.name}-${index}`}>{privileged ? <><div className="feature-heading"><input value={feature.name} onChange={(event) => setSections({ ...sections, features: sections.features.map((item, itemIndex) => itemIndex === index ? { ...item, name: event.target.value } : item) })}/><button type="button" aria-label={`Удалить особенность: ${feature.name}`} title="Удалить особенность" onClick={() => { if (window.confirm(`Удалить особенность «${feature.name}» из черновика?`)) setSections({ ...sections, features: sections.features.filter((_, itemIndex) => itemIndex !== index) }); }}>×</button></div><textarea rows={2} value={feature.description} onChange={(event) => setSections({ ...sections, features: sections.features.map((item, itemIndex) => itemIndex === index ? { ...item, description: event.target.value } : item) })}/></> : <><strong>{feature.name}</strong><p>{feature.description}</p></>}</div>)}
               {privileged && <button className="inline-add" onClick={() => setSections({ ...sections, features: [...sections.features, { name: "Новая особенность", description: "" }] })}>+ Особенность</button>}
               {resources.map((resource) => <div className="resource-row" key={resource.id}><span>{resource.name}</span><button aria-label={`Восстановить ресурс: ${resource.name}`} disabled={resource.spent <= 0} onClick={() => setResources(restoreCharacterResource(resources, resource.id))}>−</button><strong>{resource.maximum - resource.spent} / {resource.maximum}</strong><button aria-label={`Потратить ресурс: ${resource.name}`} disabled={resource.spent >= resource.maximum} onClick={() => setResources(spendCharacterResource(resources, resource.id))}>+</button></div>)}
             </section>
 
             <section className="panel attacks-panel">
               <header><h3>Атаки</h3><span>Оружие и действия</span></header>
+              {!sections.attacks.length && <p className="section-empty">Атаки не добавлены</p>}
               {sections.attacks.map((attack, index) => <div className="attack-row" key={`${attack.name}-${index}`}>{privileged ? <><input value={attack.name} onChange={(event) => setSections({ ...sections, attacks: sections.attacks.map((item, itemIndex) => itemIndex === index ? { ...item, name: event.target.value } : item) })}/><input value={attack.attackBonus} onChange={(event) => setSections({ ...sections, attacks: sections.attacks.map((item, itemIndex) => itemIndex === index ? { ...item, attackBonus: event.target.value } : item) })}/><input value={attack.damage} onChange={(event) => setSections({ ...sections, attacks: sections.attacks.map((item, itemIndex) => itemIndex === index ? { ...item, damage: event.target.value } : item) })}/></> : <><strong>{attack.name}</strong><span>{attack.attackBonus}</span><span>{attack.damage}</span></>}</div>)}
               {privileged && <button className="inline-add" onClick={() => setSections({ ...sections, attacks: [...sections.attacks, { name: "Новая атака", attackBonus: "+0", damage: "" }] })}>+ Атака</button>}
             </section>
 
             <section className="panel">
-              <header><h3>Спасброски и владения</h3><span>Системные данные</span></header>
-              <div className="save-grid">{sections.saves.map((save, index) => <label key={save.ability}><input type="checkbox" checked={save.proficient} disabled={!privileged} onChange={(event) => setSections({ ...sections, saves: sections.saves.map((item, itemIndex) => itemIndex === index ? { ...item, proficient: event.target.checked } : item) })}/>{save.ability}</label>)}</div>
-              <div className="tag-list">{sections.proficiencies.map((item) => <span key={item}>{item}</span>)}</div>
+              <header><h3>Владения</h3><span>Оружие, доспехи, инструменты и языки</span></header>
+              <div className="tag-list">{sections.proficiencies.map((item, index) => <span key={`${item}-${index}`}>{item}{privileged && <button type="button" aria-label={`Удалить владение: ${item}`} title="Удалить владение" onClick={() => { if (window.confirm(`Удалить владение «${item}» из черновика?`)) setSections({ ...sections, proficiencies: sections.proficiencies.filter((_, itemIndex) => itemIndex !== index) }); }}>×</button>}</span>)}</div>
+              {!sections.proficiencies.length && <p className="section-empty">Владения не добавлены</p>}
               {privileged && <button className="inline-add" onClick={() => { const value = window.prompt("Новое владение"); if (value) setSections({ ...sections, proficiencies: [...sections.proficiencies, value] }); }}>+ Владение</button>}
             </section>
 
