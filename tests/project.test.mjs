@@ -8,6 +8,7 @@ import { applySpellOverride, spellPatch } from "../domain/spell-overrides.ts";
 import { canonicalSpellClasses, spellMatchesClassFilter, spellMatchesClassFilters } from "../domain/spell-classes.ts";
 import { restoreSpellSlot, spendSpellSlot } from "../domain/spell-slots.ts";
 import { restoreCharacterResource, spendCharacterResource } from "../domain/character-resources.ts";
+import { characterFeatureFixtures } from "../domain/character-feature-fixtures.ts";
 
 test("contains the D&D Companion product shell", async () => {
   const [page, layout] = await Promise.all([
@@ -86,6 +87,28 @@ test("keeps campaign selection dynamic in client components", async () => {
   assert.match(page, /campaignId=/);
 });
 
+test("allows privileged users to delete seed characters with confirmation", async () => {
+  const management = await readFile(new URL("../app/ManagementPanel.tsx", import.meta.url), "utf8");
+  assert.doesNotMatch(management, /character\.id !== "character-ori"|character\.id !== "character-mirena"/);
+  assert.match(management, /Удалить персонажа: \$\{character\.name\}/);
+  assert.match(management, /без возможности восстановления/);
+});
+
+test("allows Overseer to delete inactive local profiles with confirmation", async () => {
+  const management = await readFile(new URL("../app/ManagementPanel.tsx", import.meta.url), "utf8");
+  assert.match(management, /Удалить профиль: \$\{profile\.name\}/);
+  assert.match(management, /Сами персонажи останутся/);
+  assert.match(management, /profile\.id === actor\.id/);
+  assert.match(management, /response\.json\(\)\.catch\(\(\) => \(\{\}\)\)/);
+});
+
+test("recovers when the initially selected local profile was deleted", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  assert.match(page, /response\.status === 404 && allowProfileRecovery/);
+  assert.match(page, /item\.globalRole === "OVERSEER"/);
+  assert.match(page, /setProfile\(fallback\.name\)/);
+});
+
 test("exposes spellbook sorting, preparation filters, reset, and full details", async () => {
   const spellbook = await readFile(new URL("../app/Spellbook.tsx", import.meta.url), "utf8");
   assert.match(spellbook, /Сортировка заклинаний/);
@@ -157,4 +180,52 @@ test("bounds character-resource spending and restoration", () => {
   assert.equal(restoreCharacterResource(resources, "second-wind")[0].spent, 0);
   assert.equal(spendCharacterResource(resources, "second-wind")[0].spent, 1);
   assert.equal(spendCharacterResource([{ ...resources[0], spent: 2 }], "second-wind")[0].spent, 2);
+});
+
+test("renders all standard skills in a compact three-column grid", async () => {
+  const [page, styles] = await Promise.all([
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+  for (const skill of ["Акробатика", "Анализ", "Атлетика", "Внимательность", "Выживание", "Выступление", "Запугивание", "История", "Ловкость рук", "Магия", "Медицина", "Обман", "Природа", "Проницательность", "Религия", "Скрытность", "Убеждение", "Уход за животными"]) assert.match(page, new RegExp(`name: "${skill}"`));
+  assert.match(page, /withStandardSkills\(data\.sections\?\.skills\)/);
+  assert.match(page, /skill\.proficient \? "skill proficient" : "skill"/);
+  assert.doesNotMatch(page, /Бонус мастерства \+\{proficiencyBonus\}/);
+  assert.match(styles, /\.skill-grid \{[^}]*grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
+  assert.match(styles, /\.skill\.proficient \{[^}]*background:color-mix/);
+});
+
+test("does not leak Ori-specific combat data into other characters", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  assert.match(page, /attacks: \[\]/);
+  assert.match(page, /features: \[\]/);
+  assert.match(page, /proficiencies: \[\]/);
+  assert.match(page, /hitDice: \[\]/);
+  assert.doesNotMatch(page, /Двуручный меч|Второе дыхание|Тяжёлые доспехи|к10/);
+  assert.match(page, /proficient: false/);
+});
+
+test("seeds Player's Handbook features for the current party", async () => {
+  assert.deepEqual(Object.keys(characterFeatureFixtures).sort(), ["Амрот", "Кара", "Лотти Аккерман Лиадон", "Ори Картанг", "Роберт Баша", "Сестра Мирена"].sort());
+  assert.equal(characterFeatureFixtures["Ори Картанг"].some((feature) => feature.name === "Второе дыхание"), true);
+  assert.equal(characterFeatureFixtures["Сестра Мирена"].some((feature) => feature.name === "Сохранение жизни"), true);
+  assert.match(characterFeatureFixtures["Амрот"].find((feature) => feature.name === "Происхождение исчадия")?.description ?? "", /не указан/);
+  const bootstrap = await readFile(new URL("../app/api/bootstrap/route.ts", import.meta.url), "utf8");
+  assert.match(bootstrap, /INSERT OR IGNORE INTO character_sections \(character_id,section,data_json\) SELECT id,'features'/);
+});
+
+test("allows GM and Overseer to remove character features from the draft", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  assert.match(page, /privileged \? <>/);
+  assert.match(page, /Удалить особенность: \$\{feature\.name\}/);
+  assert.match(page, /features\.filter\(\(_, itemIndex\) => itemIndex !== index\)/);
+  assert.match(page, /Удалить особенность «\$\{feature\.name\}» из черновика\?/);
+});
+
+test("shows a dedicated module with removable proficiencies", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  assert.match(page, /<header><h3>Владения<\/h3>/);
+  assert.doesNotMatch(page, /<h3>Спасброски и владения<\/h3>|Владение спасброском:/);
+  assert.match(page, /Удалить владение: \$\{item\}/);
+  assert.match(page, /proficiencies\.filter\(\(_, itemIndex\) => itemIndex !== index\)/);
 });

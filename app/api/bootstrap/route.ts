@@ -1,6 +1,7 @@
 import { env } from "cloudflare:workers";
 import { ensureDatabase } from "../../../db/bootstrap";
 import { ensureSpellCatalog } from "../../../domain/spell-catalog";
+import { characterFeatureFixtures } from "../../../domain/character-feature-fixtures";
 
 const ids = { player: "profile-ori", gm: "profile-gm", overseer: "profile-overseer", campaign: "campaign-lss", character: "character-ori", npc: "character-mirena" };
 
@@ -35,6 +36,10 @@ export async function GET(request: Request) {
     env.DB.prepare(`DELETE FROM spells WHERE source='REFERENCE' AND id IN ('spell-cure-wounds','spell-guiding-bolt','spell-spiritual-weapon')`),
     env.DB.prepare(`INSERT OR IGNORE INTO character_sections (character_id,section,data_json) VALUES (?,?,?)`).bind(ids.npc, "spellcasting", '{"preparedLimit":6}'),
   ]);
+
+  await env.DB.batch(Object.entries(characterFeatureFixtures).map(([name, features]) =>
+    env.DB.prepare(`INSERT OR IGNORE INTO character_sections (character_id,section,data_json) SELECT id,'features',? FROM characters WHERE name=?`).bind(JSON.stringify(features), name),
+  ));
 
   const profiles = (await env.DB.prepare("SELECT id,name,global_role AS globalRole FROM profiles ORDER BY name").all()).results;
   const url = new URL(request.url);

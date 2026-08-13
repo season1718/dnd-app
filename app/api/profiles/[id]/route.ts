@@ -28,6 +28,15 @@ export async function DELETE(request: Request, context: { params: Promise<{ id: 
     const count = await env.DB.prepare("SELECT COUNT(*) AS count FROM profiles WHERE global_role='OVERSEER'").first<{ count: number }>();
     if ((count?.count ?? 0) <= 1) return Response.json({ error: "Нельзя удалить последнего Overseer" }, { status: 409 });
   }
-  await env.DB.prepare("DELETE FROM profiles WHERE id=?").bind(id).run();
+  if (!target) return Response.json({ error: "Профиль не найден" }, { status: 404 });
+  try {
+    await env.DB.batch([
+      env.DB.prepare("UPDATE spells SET created_by_profile_id=NULL WHERE created_by_profile_id=?").bind(id),
+      env.DB.prepare("UPDATE spell_overrides SET updated_by_profile_id=NULL WHERE updated_by_profile_id=?").bind(id),
+      env.DB.prepare("DELETE FROM profiles WHERE id=?").bind(id),
+    ]);
+  } catch {
+    return Response.json({ error: "Профиль связан с данными, которые пока нельзя безопасно удалить" }, { status: 409 });
+  }
   return Response.json({ ok: true });
 }
