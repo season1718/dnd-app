@@ -19,6 +19,8 @@ export function ManagementPanel({ actor, campaign, profiles, characters, onChang
   const [newProfile, setNewProfile] = useState("");
   const [campaignName, setCampaignName] = useState(campaign.name);
   const [campaignDescription, setCampaignDescription] = useState(campaign.description);
+  const [newCampaignName, setNewCampaignName] = useState("");
+  const [campaignFormOpen, setCampaignFormOpen] = useState(false);
   const [memberId, setMemberId] = useState("");
   const [memberRole, setMemberRole] = useState("PLAYER");
   const [characterName, setCharacterName] = useState("");
@@ -61,13 +63,16 @@ export function ManagementPanel({ actor, campaign, profiles, characters, onChang
     await send(`/api/campaigns/${encodeURIComponent(campaign.id)}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ actorProfileId: actor.id, name: campaignName, description: campaignDescription }) }, "Кампания обновлена");
   }
 
-  async function createCampaign() {
-    const name = window.prompt("Название новой кампании");
-    if (!name?.trim()) return;
+  async function createCampaign(event: FormEvent) {
+    event.preventDefault();
+    const name = newCampaignName.trim();
+    if (!name) return;
     const response = await fetch("/api/campaigns", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ actorProfileId: actor.id, name, description: "" }) });
     const result = await response.json();
     if (!response.ok) return onMessage(result.error ?? "Не удалось создать кампанию");
     onMessage(`Кампания «${result.name}» создана`);
+    setNewCampaignName("");
+    setCampaignFormOpen(false);
     onCampaignCreated(result.id);
   }
 
@@ -101,8 +106,9 @@ export function ManagementPanel({ actor, campaign, profiles, characters, onChang
         <label>Название<input value={campaignName} onChange={(event) => setCampaignName(event.target.value)}/></label>
         <label>Описание<input value={campaignDescription} onChange={(event) => setCampaignDescription(event.target.value)}/></label>
         <button type="submit">Сохранить кампанию</button>
-        <button type="button" onClick={createCampaign}>Создать новую кампанию</button>
+        <button type="button" onClick={() => setCampaignFormOpen(!campaignFormOpen)}>Создать новую кампанию</button>
       </form>
+      {campaignFormOpen && <form onSubmit={createCampaign} className="manager-inline"><input aria-label="Название новой кампании" placeholder="Название кампании" value={newCampaignName} onChange={(event) => setNewCampaignName(event.target.value)}/><button type="submit">Создать</button><button type="button" onClick={() => setCampaignFormOpen(false)}>Отмена</button></form>}
       <h4>Участники</h4>
       <div className="manager-list">{members.map((member) => <div key={member.id}><span>{member.name}<small>{member.role === "GM" ? "Мастер" : "Игрок"}</small></span><select value={member.role} disabled={member.id === actor.id} onChange={(event) => send(`/api/campaigns/${encodeURIComponent(campaign.id)}/members`, { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ actorProfileId: actor.id, profileId: member.id, role: event.target.value }) }, "Роль изменена")}><option value="PLAYER">Игрок</option><option value="GM">Мастер</option></select>{member.id !== actor.id && <button onClick={() => send(`/api/campaigns/${encodeURIComponent(campaign.id)}/members?actorProfileId=${encodeURIComponent(actor.id)}&profileId=${encodeURIComponent(member.id)}`, { method: "DELETE" }, "Участник удалён")}>×</button>}</div>)}</div>
       <form onSubmit={addMember} className="manager-inline"><select value={memberId} onChange={(event) => setMemberId(event.target.value)}><option value="">Выберите профиль…</option>{profiles.filter((profile) => !members.some((member) => member.id === profile.id)).map((profile) => <option key={profile.id} value={profile.id}>{profile.name}</option>)}</select><select value={memberRole} onChange={(event) => setMemberRole(event.target.value)}><option value="PLAYER">Игрок</option><option value="GM">Мастер</option></select><button>Добавить</button></form>

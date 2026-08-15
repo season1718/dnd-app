@@ -67,9 +67,10 @@ test("enforces roles, revisions, transfer safety, and campaign isolation through
   // create their own fixtures instead of depending on Ori or Mirena.
   const suffix = crypto.randomUUID().slice(0, 8);
   const outsider = await request("/api/profiles", json("POST", { actorProfileId: "profile-overseer", name: `Тестовый игрок ${suffix}` }), 201);
+  const bystander = await request("/api/profiles", json("POST", { actorProfileId: "profile-overseer", name: `Посторонний игрок ${suffix}` }), 201);
   const disposableProfile = await request("/api/profiles", json("POST", { actorProfileId: "profile-overseer", name: `Удаляемый профиль ${suffix}`, globalRole: "OVERSEER" }), 201);
   const disposableSpell = await request("/api/spells", json("POST", { actorProfileId: disposableProfile.id, nameEn: `Disposable Spell ${suffix}`, nameRu: "Удаляемая авторская ссылка", level: 0, school: "воплощение", castingTime: "1 действие", range: "На себя", components: "В", duration: "Мгновенно", classes: [], description: "Проверка удаления профиля-автора." }), 201);
-  await request(`/api/profiles/${disposableProfile.id}?actorProfileId=profile-gm`, { method: "DELETE" }, 403);
+  await request(`/api/profiles/${disposableProfile.id}?actorProfileId=${outsider.id}`, { method: "DELETE" }, 403);
   await request(`/api/profiles/${disposableProfile.id}?actorProfileId=profile-overseer`, { method: "DELETE" });
   const profilesAfterDeletion = await request("/api/profiles");
   assert.equal(profilesAfterDeletion.profiles.some((profile) => profile.id === disposableProfile.id), false);
@@ -78,30 +79,39 @@ test("enforces roles, revisions, transfer safety, and campaign isolation through
   let campaignId;
   let linkedCustomSpellId;
   try {
-    const campaign = await request("/api/campaigns", json("POST", { actorProfileId: "profile-gm", name: `API Test ${suffix}`, description: "Изолированная интеграционная кампания" }), 201);
+    const campaign = await request("/api/campaigns", json("POST", { actorProfileId: "profile-overseer", name: `API Test ${suffix}`, description: "Изолированная интеграционная кампания" }), 201);
     campaignId = campaign.id;
-    await request(`/api/campaigns/${campaignId}/members`, json("PUT", { actorProfileId: "profile-gm", profileId: outsider.id, role: "PLAYER" }));
+    await request(`/api/campaigns/${campaignId}/members`, json("PUT", { actorProfileId: "profile-overseer", profileId: outsider.id, role: "PLAYER" }));
 
-    const first = await request("/api/characters", json("POST", { actorProfileId: "profile-gm", campaignId, name: `Герой ${suffix}`, kind: "PC", assignToProfileId: outsider.id }), 201);
-    const second = await request("/api/characters", json("POST", { actorProfileId: "profile-gm", campaignId, name: `Спутник ${suffix}`, kind: "PC", assignToProfileId: outsider.id }), 201);
+    const first = await request("/api/characters", json("POST", { actorProfileId: "profile-overseer", campaignId, name: `Герой ${suffix}`, kind: "PC", assignToProfileId: outsider.id }), 201);
+    const second = await request("/api/characters", json("POST", { actorProfileId: "profile-overseer", campaignId, name: `Спутник ${suffix}`, kind: "PC", assignToProfileId: outsider.id }), 201);
 
     const playerWorkspace = await request(`/api/bootstrap?profileId=${outsider.id}&campaignId=${campaignId}`);
     assert.deepEqual(new Set(playerWorkspace.characters.map((character) => character.id)), new Set([first.id, second.id]));
-    await request(`/api/characters/${first.id}?profileId=profile-ori`, {}, 403);
-    await request(`/api/characters/${second.id}?profileId=profile-gm`, { method: "DELETE" });
+    await request(`/api/characters/${first.id}?profileId=${bystander.id}`, {}, 403);
+    await request(`/api/characters/${second.id}?profileId=profile-overseer`, { method: "DELETE" });
     const afterCharacterDeletion = await request(`/api/bootstrap?profileId=${outsider.id}&campaignId=${campaignId}`);
     assert.deepEqual(afterCharacterDeletion.characters.map((character) => character.id), [first.id]);
     assert.equal(afterCharacterDeletion.character.id, first.id);
 
     const original = await request(`/api/characters/${first.id}?profileId=${outsider.id}`);
-    const playerSave = { profileId: outsider.id, expectedRevision: original.revision, currentHp: 1, coins: { gp: 7 }, notes: "Интеграционный черновик" };
+    const playerSave = { profileId: outsider.id, expectedRevision: original.revision, currentHp: 1, coins: { gp: 7 }, notes: "Интеграционный черновик", sections: { playerNotes: [{ id: "player-note", text: "Заметка игрока" }], gmNotes: [{ id: "forged-gm-note", text: "Попытка игрока" }] } };
     await request(`/api/characters/${first.id}`, json("PATCH", { ...playerSave, system: { name: "Подмена системного имени" } }), 400);
     const saved = await request(`/api/characters/${first.id}`, json("PATCH", playerSave));
     assert.notEqual(saved.revision, original.revision);
     await request(`/api/characters/${first.id}`, json("PATCH", playerSave), 409);
-    const protectedCharacter = await request(`/api/characters/${first.id}?profileId=profile-gm`);
+    const protectedCharacter = await request(`/api/characters/${first.id}?profileId=profile-overseer`);
     assert.equal(protectedCharacter.name, `Герой ${suffix}`);
     assert.equal(protectedCharacter.current_hp, 1);
+    assert.deepEqual(protectedCharacter.sections.playerNotes, [{ id: "player-note", text: "Заметка игрока" }]);
+    assert.equal(protectedCharacter.sections.gmNotes, undefined);
+    await request(`/api/characters/${first.id}`, json("PATCH", { profileId: "profile-overseer", expectedRevision: protectedCharacter.revision, currentHp: 1, sections: { gmNotes: [{ id: "gm-note", text: "Секрет Мастера" }] } }));
+    const playerAfterGmNote = await request(`/api/characters/${first.id}?profileId=${outsider.id}`);
+    assert.equal(playerAfterGmNote.sections.gmNotes, undefined);
+    const gmAfterGmNote = await request(`/api/characters/${first.id}?profileId=profile-overseer`);
+    assert.deepEqual(gmAfterGmNote.sections.gmNotes, [{ id: "gm-note", text: "Секрет Мастера" }]);
+    const playerExport = await request(`/api/characters/${first.id}/export?profileId=${outsider.id}`);
+    assert.equal(playerExport.character.sections.gmNotes, undefined);
 
     const spellbook = await request(`/api/spells?profileId=${outsider.id}&characterId=${first.id}`);
     const bookSave = { profileId: outsider.id, expectedRevision: spellbook.revision, preparedLimit: spellbook.preparedLimit, spells: [], slots: [] };
@@ -111,38 +121,38 @@ test("enforces roles, revisions, transfer safety, and campaign isolation through
     await request(`/api/characters/${first.id}/spells`, json("PUT", {}), 410);
     await request(`/api/characters/${first.id}/spell-slots`, json("PATCH", {}), 410);
 
-    const spellPayload = { actorProfileId: "profile-gm", nameEn: `Integration Spell ${suffix}`, nameRu: "Интеграционное заклинание", level: 1, school: "воплощение", castingTime: "1 действие", range: "30 футов", components: "В, С", duration: "Мгновенно", classes: ["Волшебник"], description: "Создано интеграционным тестом." };
+    const spellPayload = { actorProfileId: "profile-overseer", nameEn: `Integration Spell ${suffix}`, nameRu: "Интеграционное заклинание", level: 1, school: "воплощение", castingTime: "1 действие", range: "30 футов", components: "В, С", duration: "Мгновенно", classes: ["Волшебник"], description: "Создано интеграционным тестом." };
     await request("/api/spells", json("POST", { ...spellPayload, actorProfileId: outsider.id }), 403);
     const unusedSpell = await request("/api/spells", json("POST", spellPayload), 201);
     await request(`/api/spells/${unusedSpell.id}?actorProfileId=${outsider.id}`, { method: "DELETE" }, 403);
-    await request(`/api/spells/${unusedSpell.id}?actorProfileId=profile-gm`, { method: "DELETE" });
-    await request("/api/spells/phb2024-cure-wounds?actorProfileId=profile-gm", { method: "DELETE" }, 409);
+    await request(`/api/spells/${unusedSpell.id}?actorProfileId=profile-overseer`, { method: "DELETE" });
+    await request("/api/spells/phb2024-cure-wounds?actorProfileId=profile-overseer", { method: "DELETE" }, 409);
 
-    const catalogBook = await request(`/api/spells?profileId=profile-gm&characterId=${first.id}`);
+    const catalogBook = await request(`/api/spells?profileId=profile-overseer&characterId=${first.id}`);
     const cureWounds = catalogBook.spells.find((spell) => spell.id === "phb2024-cure-wounds");
-    const catalogEdit = { actorProfileId: "profile-gm", nameEn: cureWounds.nameEn, nameRu: `${cureWounds.nameRu} · тест`, level: cureWounds.level, school: cureWounds.school, castingTime: cureWounds.castingTime, range: cureWounds.range, components: cureWounds.components, duration: cureWounds.duration, classes: JSON.parse(cureWounds.classesJson), description: cureWounds.description };
+    const catalogEdit = { actorProfileId: "profile-overseer", nameEn: cureWounds.nameEn, nameRu: `${cureWounds.nameRu} · тест`, level: cureWounds.level, school: cureWounds.school, castingTime: cureWounds.castingTime, range: cureWounds.range, components: cureWounds.components, duration: cureWounds.duration, classes: JSON.parse(cureWounds.classesJson), description: cureWounds.description };
     await request("/api/spells/phb2024-cure-wounds", json("PATCH", { ...catalogEdit, actorProfileId: outsider.id }), 403);
     await request("/api/spells/phb2024-cure-wounds", json("PATCH", catalogEdit));
-    const editedCatalogBook = await request(`/api/spells?profileId=profile-gm&characterId=${first.id}`);
+    const editedCatalogBook = await request(`/api/spells?profileId=profile-overseer&characterId=${first.id}`);
     const editedCureWounds = editedCatalogBook.spells.find((spell) => spell.id === "phb2024-cure-wounds");
     assert.equal(editedCureWounds.nameRu, `${cureWounds.nameRu} · тест`);
     assert.equal(editedCureWounds.overridden, true);
     await request("/api/spells/phb2024-cure-wounds/override?actorProfileId=" + outsider.id, { method: "DELETE" }, 403);
-    await request("/api/spells/phb2024-cure-wounds/override?actorProfileId=profile-gm", { method: "DELETE" });
-    const resetCatalogBook = await request(`/api/spells?profileId=profile-gm&characterId=${first.id}`);
+    await request("/api/spells/phb2024-cure-wounds/override?actorProfileId=profile-overseer", { method: "DELETE" });
+    const resetCatalogBook = await request(`/api/spells?profileId=profile-overseer&characterId=${first.id}`);
     assert.equal(resetCatalogBook.spells.find((spell) => spell.id === "phb2024-cure-wounds").nameRu, cureWounds.nameRu);
 
     const linkedSpell = await request("/api/spells", json("POST", { ...spellPayload, nameEn: `Linked Spell ${suffix}` }), 201);
     linkedCustomSpellId = linkedSpell.id;
     const currentBook = await request(`/api/spells?profileId=${outsider.id}&characterId=${first.id}`);
-    await request(`/api/characters/${first.id}/spellbook`, json("PUT", { profileId: "profile-gm", expectedRevision: currentBook.revision, preparedLimit: currentBook.preparedLimit, spells: [{ spellId: linkedSpell.id, known: true, prepared: true }], slots: currentBook.slots }));
-    const blockedDeletion = await request(`/api/spells/${linkedSpell.id}?actorProfileId=profile-gm`, { method: "DELETE" }, 409);
+    await request(`/api/characters/${first.id}/spellbook`, json("PUT", { profileId: "profile-overseer", expectedRevision: currentBook.revision, preparedLimit: currentBook.preparedLimit, spells: [{ spellId: linkedSpell.id, known: true, prepared: true }], slots: currentBook.slots }));
+    const blockedDeletion = await request(`/api/spells/${linkedSpell.id}?actorProfileId=profile-overseer`, { method: "DELETE" }, 409);
     assert.equal(blockedDeletion.uses[0].name, `Герой ${suffix}`);
 
-    const exported = await request(`/api/characters/${first.id}/export?profileId=profile-gm`);
+    const exported = await request(`/api/characters/${first.id}/export?profileId=profile-overseer`);
     assert.equal(exported.format, "dnd-companion-character");
-    const importedOnce = await request("/api/imports/dnd-companion", json("POST", { profileId: "profile-gm", campaignId, assignToProfileId: outsider.id, document: exported }), 201);
-    const importedTwice = await request("/api/imports/dnd-companion", json("POST", { profileId: "profile-gm", campaignId, document: exported }), 201);
+    const importedOnce = await request("/api/imports/dnd-companion", json("POST", { profileId: "profile-overseer", campaignId, assignToProfileId: outsider.id, document: exported }), 201);
+    const importedTwice = await request("/api/imports/dnd-companion", json("POST", { profileId: "profile-overseer", campaignId, document: exported }), 201);
     assert.notEqual(importedOnce.id, first.id);
     assert.notEqual(importedTwice.id, importedOnce.id);
     assert.ok(importedTwice.warnings.length > 0);
@@ -153,5 +163,6 @@ test("enforces roles, revisions, transfer safety, and campaign isolation through
     if (campaignId) await request(`/api/campaigns/${campaignId}?actorProfileId=profile-overseer`, { method: "DELETE" });
     if (linkedCustomSpellId) await request(`/api/spells/${linkedCustomSpellId}?actorProfileId=profile-overseer`, { method: "DELETE" });
     await request(`/api/profiles/${outsider.id}?actorProfileId=profile-overseer`, { method: "DELETE" });
+    await request(`/api/profiles/${bystander.id}?actorProfileId=profile-overseer`, { method: "DELETE" });
   }
 });

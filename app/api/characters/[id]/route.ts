@@ -15,9 +15,10 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
   const resources = (await env.DB.prepare("SELECT id,name,maximum,spent,reset_on AS resetOn FROM character_resources WHERE character_id=? ORDER BY name").bind(id).all()).results;
   const spellSlots = (await env.DB.prepare("SELECT pool,level,maximum,spent FROM spell_slot_pools WHERE character_id=? ORDER BY pool,level").bind(id).all()).results;
   const sectionRows = (await env.DB.prepare("SELECT section,data_json AS dataJson FROM character_sections WHERE character_id=?").bind(id).all()).results as Array<{ section: string; dataJson: string }>;
-  const sections = Object.fromEntries(sectionRows.map((row) => [row.section, JSON.parse(row.dataJson)]));
+  const privileged = access.globalRole === "OVERSEER" || access.campaignRole === "GM";
+  const sections = Object.fromEntries(sectionRows.filter((row) => privileged || row.section !== "gmNotes").map((row) => [row.section, JSON.parse(row.dataJson)]));
   const assignedProfileIds = (await env.DB.prepare("SELECT profile_id AS profileId FROM character_assignments WHERE character_id=?").bind(id).all()).results.map((row) => row.profileId);
-  return Response.json({ ...character, classes, resources, spellSlots, sections, assignedProfileIds, permissions: { privileged: access.globalRole === "OVERSEER" || access.campaignRole === "GM" } });
+  return Response.json({ ...character, classes, resources, spellSlots, sections, assignedProfileIds, permissions: { privileged } });
 }
 
 export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
@@ -27,7 +28,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
   if (!parsed.success) return parsed.response;
   const body = parsed.data;
 
-  const access = await env.DB.prepare(`SELECT p.global_role AS globalRole, cm.role AS campaignRole, ca.profile_id IS NOT NULL AS assigned, c.maximum_hp AS maximumHp,c.revision FROM characters c JOIN profiles p ON p.id=? LEFT JOIN campaign_members cm ON cm.campaign_id=c.campaign_id AND cm.profile_id=p.id LEFT JOIN character_assignments ca ON ca.character_id=c.id AND ca.profile_id=p.id WHERE c.id=?`).bind(body.profileId, id).first<{ globalRole: string; campaignRole: string | null; assigned: number; maximumHp: number; revision: string }>();
+  const access = await env.DB.prepare(`SELECT p.global_role AS globalRole, cm.role AS campaignRole, ca.profile_id IS NOT NULL AS assigned, c.maximum_hp AS maximumHp,c.portrait_data_url AS portraitDataUrl,c.revision FROM characters c JOIN profiles p ON p.id=? LEFT JOIN campaign_members cm ON cm.campaign_id=c.campaign_id AND cm.profile_id=p.id LEFT JOIN character_assignments ca ON ca.character_id=c.id AND ca.profile_id=p.id WHERE c.id=?`).bind(body.profileId, id).first<{ globalRole: string; campaignRole: string | null; assigned: number; maximumHp: number; portraitDataUrl: string; revision: string }>();
   if (!access || (access.globalRole !== "OVERSEER" && access.campaignRole !== "GM" && !access.assigned)) return Response.json({ error: "Нет доступа" }, { status: 403 });
   if (access.revision !== body.expectedRevision) return Response.json({ error: "Персонаж уже изменён в другом окне. Обновите лист перед повторным сохранением", currentRevision: access.revision }, { status: 409 });
   const privileged = access.globalRole === "OVERSEER" || access.campaignRole === "GM";
@@ -40,10 +41,10 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
   if (body.system && privileged) {
     const value = body.system;
     const ability = (key: string) => Math.max(1, Math.min(30, Number(value[key] ?? 10)));
-    statements.push(env.DB.prepare(`UPDATE characters SET name=?,kind=?,species=?,background=?,alignment=?,experience=?,strength=?,dexterity=?,constitution=?,intelligence=?,wisdom=?,charisma=?,armor_class=?,speed=?,maximum_hp=? WHERE id=? AND revision=?`).bind(String(value.name ?? "Безымянный").trim().slice(0, 100), value.kind === "NPC" ? "NPC" : "PC", String(value.species ?? "").slice(0, 100), String(value.background ?? "").slice(0, 100), String(value.alignment ?? "").slice(0, 100), Math.max(0, Number(value.experience ?? 0)), ability("strength"), ability("dexterity"), ability("constitution"), ability("intelligence"), ability("wisdom"), ability("charisma"), Math.max(0, Number(value.armorClass ?? 10)), Math.max(0, Number(value.speed ?? 30)), Math.max(1, Number(value.maximumHp ?? 1)), id, body.expectedRevision));
+    statements.push(env.DB.prepare(`UPDATE characters SET name=?,kind=?,species=?,background=?,alignment=?,experience=?,strength=?,dexterity=?,constitution=?,intelligence=?,wisdom=?,charisma=?,armor_class=?,speed=?,maximum_hp=?,portrait_data_url=? WHERE id=? AND revision=?`).bind(String(value.name ?? "Безымянный").trim().slice(0, 100), value.kind === "NPC" ? "NPC" : "PC", String(value.species ?? "").slice(0, 100), String(value.background ?? "").slice(0, 100), String(value.alignment ?? "").slice(0, 100), Math.max(0, Number(value.experience ?? 0)), ability("strength"), ability("dexterity"), ability("constitution"), ability("intelligence"), ability("wisdom"), ability("charisma"), Math.max(0, Number(value.armorClass ?? 10)), Math.max(0, Number(value.speed ?? 30)), Math.max(1, Number(value.maximumHp ?? 1)), value.portraitDataUrl ?? access.portraitDataUrl, id, body.expectedRevision));
   }
-  if (body.sections && privileged) {
-    const allowed = new Set(["skills", "saves", "attacks", "features", "proficiencies", "conditions", "hitDice"]);
+  if (body.sections) {
+    const allowed = privileged ? new Set(["skills", "saves", "attacks", "features", "proficiencies", "conditions", "hitDice", "playerNotes", "gmNotes"]) : new Set(["playerNotes"]);
     Object.entries(body.sections).filter(([section]) => allowed.has(section)).forEach(([section, data]) => statements.push(env.DB.prepare(`INSERT INTO character_sections (character_id,section,data_json) SELECT ?,?,? WHERE EXISTS (SELECT 1 FROM characters WHERE id=? AND revision=?) ON CONFLICT(character_id,section) DO UPDATE SET data_json=excluded.data_json,updated_at=CURRENT_TIMESTAMP`).bind(id, section, JSON.stringify(data), id, body.expectedRevision)));
   }
   if (body.classes && privileged) {

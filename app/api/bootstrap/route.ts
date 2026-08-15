@@ -2,12 +2,24 @@ import { env } from "cloudflare:workers";
 import { ensureDatabase } from "../../../db/bootstrap";
 import { ensureSpellCatalog } from "../../../domain/spell-catalog";
 import { characterFeatureFixtures } from "../../../domain/character-feature-fixtures";
+import { classFeatureDescription } from "../../../domain/class-feature-descriptions";
 
 const ids = { player: "profile-ori", gm: "profile-gm", overseer: "profile-overseer", campaign: "campaign-lss", character: "character-ori", npc: "character-mirena" };
 
 export async function GET(request: Request) {
   await ensureDatabase();
   await ensureSpellCatalog();
+  const generatedFeatureSections = (await env.DB.prepare("SELECT cs.character_id AS characterId,cs.data_json AS dataJson,GROUP_CONCAT(cc.class_key) AS classKeys FROM character_sections cs JOIN character_classes cc ON cc.character_id=cs.character_id WHERE cs.section='features' GROUP BY cs.character_id").all()).results as Array<{ characterId: string; dataJson: string; classKeys: string }>;
+  for (const row of generatedFeatureSections) {
+    const features = JSON.parse(row.dataJson) as Array<{ name: string; description: string }>;
+    let changed = false;
+    for (const feature of features) {
+      if (!/^Получено на \d+ уровне класса/u.test(feature.description)) continue;
+      const replacement = row.classKeys.split(",").map((classKey) => classFeatureDescription(classKey, feature.name)).find(Boolean);
+      if (replacement) { feature.description = replacement; changed = true; }
+    }
+    if (changed) await env.DB.prepare("UPDATE character_sections SET data_json=?,updated_at=CURRENT_TIMESTAMP WHERE character_id=? AND section='features'").bind(JSON.stringify(features), row.characterId).run();
+  }
   const existing = await env.DB.prepare("SELECT id FROM profiles LIMIT 1").first();
   if (!existing) {
     await env.DB.batch([
@@ -25,8 +37,9 @@ export async function GET(request: Request) {
   }
 
   await env.DB.batch([
+    env.DB.prepare(`DELETE FROM character_classes WHERE id='class-mirena-cleric' AND EXISTS (SELECT 1 FROM character_classes existing WHERE existing.character_id=? AND existing.id<>'class-mirena-cleric' AND existing.class_name='Жрец' AND existing.level=3)`).bind(ids.npc),
     env.DB.prepare(`INSERT OR IGNORE INTO characters (id,campaign_id,kind,name,species,background,alignment,experience,strength,dexterity,constitution,intelligence,wisdom,charisma,armor_class,speed,maximum_hp,current_hp,coins_json,equipment_json,notes_json,source) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(ids.npc, ids.campaign, "NPC", "Сестра Мирена", "Человек", "Хранительница приюта", "Законно-нейтральная", 0, 9, 13, 12, 14, 16, 15, 13, 30, 18, 18, '{"cp":0,"sp":8,"ep":0,"gp":4,"pp":0}', '["Посох","Священный символ","Лечебный набор"]', '[{"title":"Секрет Мастера","text":"Знает старый путь под городскими стенами."}]', "TEST_FIXTURE"),
-    env.DB.prepare(`INSERT OR IGNORE INTO character_classes (id,character_id,class_key,class_name,subclass_name,level) VALUES (?,?,?,?,?,?)`).bind("class-mirena-cleric", ids.npc, "cleric", "Жрец", "Домен Жизни", 3),
+    env.DB.prepare(`INSERT INTO character_classes (id,character_id,class_key,class_name,subclass_name,level) SELECT ?,?,?,?,?,? WHERE NOT EXISTS (SELECT 1 FROM character_classes WHERE character_id=? AND class_name='Жрец')`).bind("class-mirena-cleric", ids.npc, "cleric", "Жрец", "Домен Жизни", 3, ids.npc),
     env.DB.prepare(`INSERT OR IGNORE INTO character_resources (id,character_id,name,maximum,spent,reset_on) VALUES (?,?,?,?,?,?)`).bind("resource-mirena-channel", ids.npc, "Божественный канал", 2, 0, "SHORT_REST"),
     env.DB.prepare(`INSERT OR IGNORE INTO spell_slot_pools (character_id,pool,level,maximum,spent) VALUES (?,?,?,?,?)`).bind(ids.npc, "STANDARD", 1, 4, 0),
     env.DB.prepare(`INSERT OR IGNORE INTO spell_slot_pools (character_id,pool,level,maximum,spent) VALUES (?,?,?,?,?)`).bind(ids.npc, "STANDARD", 2, 2, 0),
@@ -65,6 +78,6 @@ export async function GET(request: Request) {
   const resources = (await env.DB.prepare("SELECT id,name,maximum,spent,reset_on AS resetOn FROM character_resources WHERE character_id=? ORDER BY name").bind(firstCharacterId).all()).results;
   const spellSlots = (await env.DB.prepare("SELECT pool,level,maximum,spent FROM spell_slot_pools WHERE character_id=? ORDER BY pool,level").bind(firstCharacterId).all()).results;
   const sectionRows = (await env.DB.prepare("SELECT section,data_json AS dataJson FROM character_sections WHERE character_id=?").bind(firstCharacterId).all()).results as Array<{ section: string; dataJson: string }>;
-  const sections = Object.fromEntries(sectionRows.map((row) => [row.section, JSON.parse(row.dataJson)]));
+  const sections = Object.fromEntries(sectionRows.filter((row) => privileged || row.section !== "gmNotes").map((row) => [row.section, JSON.parse(row.dataJson)]));
   return Response.json({ profiles, campaigns, characters, permissions: { privileged }, campaign, character: { ...character, classes, resources, spellSlots, sections } });
 }

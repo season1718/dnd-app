@@ -26,8 +26,12 @@ export async function ensureDatabase() {
   const columns = (await env.DB.prepare("PRAGMA table_info(characters)").all()).results as Array<{ name: string }>;
   if (!columns.some((column) => column.name === "revision")) await env.DB.prepare("ALTER TABLE characters ADD COLUMN revision TEXT NOT NULL DEFAULT ''").run();
   if (!columns.some((column) => column.name === "spellbook_revision")) await env.DB.prepare("ALTER TABLE characters ADD COLUMN spellbook_revision TEXT NOT NULL DEFAULT ''").run();
+  if (!columns.some((column) => column.name === "portrait_data_url")) await env.DB.prepare("ALTER TABLE characters ADD COLUMN portrait_data_url TEXT NOT NULL DEFAULT ''").run();
   const spellColumns = (await env.DB.prepare("PRAGMA table_info(spells)").all()).results as Array<{ name: string }>;
   if (!spellColumns.some((column) => column.name === "source_book")) await env.DB.prepare("ALTER TABLE spells ADD COLUMN source_book TEXT NOT NULL DEFAULT ''").run();
   if (!spellColumns.some((column) => column.name === "source_page")) await env.DB.prepare("ALTER TABLE spells ADD COLUMN source_page INTEGER").run();
+  await env.DB.prepare(`UPDATE character_resources AS kept SET maximum=(SELECT MAX(other.maximum) FROM character_resources other WHERE other.character_id=kept.character_id AND LOWER(TRIM(other.name))=LOWER(TRIM(kept.name))),spent=(SELECT MAX(other.spent) FROM character_resources other WHERE other.character_id=kept.character_id AND LOWER(TRIM(other.name))=LOWER(TRIM(kept.name)))`).run();
+  await env.DB.prepare(`DELETE FROM character_resources WHERE rowid NOT IN (SELECT MIN(rowid) FROM character_resources GROUP BY character_id,LOWER(TRIM(name)))`).run();
+  await env.DB.prepare("CREATE UNIQUE INDEX IF NOT EXISTS idx_character_resources_character_name ON character_resources(character_id,name COLLATE NOCASE)").run();
   initialized = true;
 }
