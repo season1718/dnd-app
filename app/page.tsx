@@ -3,7 +3,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ManagementPanel } from "./ManagementPanel";
 import { Spellbook } from "./Spellbook";
+import { PortraitCropper } from "./PortraitCropper";
+import { LevelUpPanel } from "./LevelUpPanel";
 import { restoreCharacterResource, spendCharacterResource } from "../domain/character-resources";
+import { getExperienceProgress } from "../domain/experience";
 
 type SheetSections = {
   skills: Array<{ name: string; ability: string; proficient: boolean; expertise: boolean }>;
@@ -13,14 +16,16 @@ type SheetSections = {
   proficiencies: string[];
   conditions: string[];
   hitDice: Array<{ die: string; maximum: number; spent: number }>;
+  playerNotes: Array<{ id: string; text: string }>;
+  gmNotes: Array<{ id: string; text: string }>;
 };
 
-type CharacterClass = { className: string; subclassName?: string; level: number };
+type CharacterClass = { classKey?: string; className: string; subclassName?: string; level: number };
 type CharacterResource = { id: string; name: string; maximum: number; spent: number };
 type Campaign = { id: string; name: string; description: string; role?: string | null };
 type CharacterPayload = {
   revision?: string;
-  current_hp?: number; coins_json?: string; notes_json?: string; equipment_json?: string;
+  current_hp?: number; coins_json?: string; notes_json?: string; equipment_json?: string; portrait_data_url?: string;
   name: string; kind: string; species: string; background: string; alignment: string;
   experience: number; armor_class: number; speed: number; maximum_hp: number;
   strength: number; dexterity: number; constitution: number; intelligence: number; wisdom: number; charisma: number;
@@ -71,6 +76,8 @@ const defaultSections: SheetSections = {
   proficiencies: [],
   conditions: [],
   hitDice: [],
+  playerNotes: [],
+  gmNotes: [],
 };
 
 export default function Home() {
@@ -88,9 +95,11 @@ export default function Home() {
   const [revision, setRevision] = useState("");
   const [message, setMessage] = useState("Все изменения сохранены");
   const importInput = useRef<HTMLInputElement>(null);
+  const portraitInput = useRef<HTMLInputElement>(null);
+  const [portraitFile, setPortraitFile] = useState<File | null>(null);
   const [characters, setCharacters] = useState<Array<{ id: string; name: string; kind: string; species: string; level: number; classes: string }>>([]);
   const [characterId, setCharacterId] = useState("character-ori");
-  const [character, setCharacter] = useState({ name: "Ори Картанг", kind: "PC", species: "Дварф", background: "Стражник", alignment: "Нейтральный злой", level: 1, classes: "Воин", experience: 200, armorClass: 16, speed: 30, maximumHp: 12, strength: 15, dexterity: 12, constitution: 15, intelligence: 11, wisdom: 12, charisma: 10 });
+  const [character, setCharacter] = useState({ name: "Ори Картанг", kind: "PC", species: "Дварф", background: "Стражник", alignment: "Нейтральный злой", level: 1, classes: "Воин", experience: 200, armorClass: 16, speed: 30, maximumHp: 12, strength: 15, dexterity: 12, constitution: 15, intelligence: 11, wisdom: 12, charisma: 10, portraitDataUrl: "" });
   const [savedCharacter, setSavedCharacter] = useState(character);
   const [equipment, setEquipment] = useState<string[]>([]);
   const [resources, setResources] = useState<CharacterResource[]>([]);
@@ -99,6 +108,10 @@ export default function Home() {
   const [savedClasses, setSavedClasses] = useState(classesDetail);
   const [sections, setSections] = useState<SheetSections>(defaultSections);
   const [savedSections, setSavedSections] = useState<SheetSections>(defaultSections);
+  const [newProficiency, setNewProficiency] = useState("");
+  const [experienceAmount, setExperienceAmount] = useState("50");
+  const [classDraftOpen, setClassDraftOpen] = useState(false);
+  const [newClassDraft, setNewClassDraft] = useState({ className: "", subclassName: "", level: 1 });
   const dirty = useMemo(
     () => hp !== saved.hp || coins !== saved.coins || notes !== saved.notes || JSON.stringify(character) !== JSON.stringify(savedCharacter) || JSON.stringify(classesDetail) !== JSON.stringify(savedClasses) || JSON.stringify(sections) !== JSON.stringify(savedSections) || JSON.stringify(resources) !== JSON.stringify(savedResources),
     [hp, coins, notes, saved, character, savedCharacter, classesDetail, savedClasses, sections, savedSections, resources, savedResources],
@@ -126,11 +139,11 @@ export default function Home() {
     const nextNotes = typeof parsedNotes?.[0] === "string" ? parsedNotes[0] : parsedNotes?.[0]?.text ?? "";
     const classNames = (data.classes ?? []).map((item) => item.className).join(" / ") || "Без класса";
     const level = (data.classes ?? []).reduce((sum, item) => sum + Number(item.level), 0);
-    const nextCharacter = { name: data.name, kind: data.kind, species: data.species, background: data.background, alignment: data.alignment, level, classes: classNames, experience: data.experience, armorClass: data.armor_class, speed: data.speed, maximumHp: data.maximum_hp, strength: data.strength, dexterity: data.dexterity, constitution: data.constitution, intelligence: data.intelligence, wisdom: data.wisdom, charisma: data.charisma };
+    const nextCharacter = { name: data.name, kind: data.kind, species: data.species, background: data.background, alignment: data.alignment, level, classes: classNames, experience: data.experience, armorClass: data.armor_class, speed: data.speed, maximumHp: data.maximum_hp, strength: data.strength, dexterity: data.dexterity, constitution: data.constitution, intelligence: data.intelligence, wisdom: data.wisdom, charisma: data.charisma, portraitDataUrl: data.portrait_data_url ?? "" };
     setCharacter(nextCharacter); setSavedCharacter(nextCharacter);
     setEquipment(parseJson<string[]>(data.equipment_json, []));
     setResources(data.resources ?? []); setSavedResources(data.resources ?? []);
-    const nextClasses = (data.classes ?? []).map((item) => ({ className: item.className, subclassName: item.subclassName ?? "", level: Number(item.level) }));
+    const nextClasses = (data.classes ?? []).map((item) => ({ classKey: item.classKey, className: item.className, subclassName: item.subclassName ?? "", level: Number(item.level) }));
     setClassesDetail(nextClasses); setSavedClasses(nextClasses);
     const nextSections = { ...defaultSections, ...(data.sections ?? {}), skills: withStandardSkills(data.sections?.skills) } as SheetSections;
     setSections(nextSections); setSavedSections(nextSections);
@@ -196,7 +209,7 @@ export default function Home() {
       const response = await fetch(`/api/characters/${encodeURIComponent(characterId)}`, {
         method: "PATCH",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ profileId: selectedProfile.id, expectedRevision: revision, currentHp: hp, coins: { gp: coins }, notes, resources, system: privileged ? { name: character.name, kind: character.kind, species: character.species, background: character.background, alignment: character.alignment, experience: character.experience, armorClass: character.armorClass, speed: character.speed, maximumHp: character.maximumHp, strength: character.strength, dexterity: character.dexterity, constitution: character.constitution, intelligence: character.intelligence, wisdom: character.wisdom, charisma: character.charisma } : undefined, sections: privileged ? sections : undefined, classes: privileged ? classesDetail : undefined }),
+        body: JSON.stringify({ profileId: selectedProfile.id, expectedRevision: revision, currentHp: hp, coins: { gp: coins }, notes, resources, system: privileged ? { name: character.name, kind: character.kind, species: character.species, background: character.background, alignment: character.alignment, experience: character.experience, armorClass: character.armorClass, speed: character.speed, maximumHp: character.maximumHp, strength: character.strength, dexterity: character.dexterity, constitution: character.constitution, intelligence: character.intelligence, wisdom: character.wisdom, charisma: character.charisma, portraitDataUrl: character.portraitDataUrl } : undefined, sections: privileged ? sections : { playerNotes: sections.playerNotes }, classes: privileged ? classesDetail.map(({ className, subclassName, level }) => ({ className, subclassName, level })) : undefined }),
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error ?? "Не удалось сохранить");
@@ -215,17 +228,40 @@ export default function Home() {
     }
   }
 
-  function addClassDraft() {
-    const className = window.prompt("Название дополнительного класса");
-    if (!className) return;
-    const level = Math.max(1, Math.min(20, Number(window.prompt("Уровень в этом классе", "1") ?? 1)));
-    setClassesDetail([...classesDetail, { className, subclassName: "", level }]);
+  function addClassDraft(event: React.FormEvent) {
+    event.preventDefault();
+    const className = newClassDraft.className.trim();
+    if (!className) return setMessage("Укажите название класса");
+    const level = Math.max(1, Math.min(20, Number(newClassDraft.level) || 1));
+    setClassesDetail([...classesDetail, { className, subclassName: newClassDraft.subclassName.trim(), level }]);
+    setNewClassDraft({ className: "", subclassName: "", level: 1 });
+    setClassDraftOpen(false);
+    setMessage(`Класс «${className}» добавлен в черновик — сохраните изменения`);
   }
 
   const abilityScore = (key: string) => Number(character[key as keyof typeof character] ?? 10);
   const draftLevel = classesDetail.reduce((sum, item) => sum + Number(item.level), 0);
   const proficiencyBonus = Math.ceil(draftLevel / 4) + 1;
+  const experienceProgress = getExperienceProgress(draftLevel, character.experience);
   const skillBonus = (skill: SheetSections["skills"][number]) => Math.floor((abilityScore(skill.ability) - 10) / 2) + (skill.proficient ? proficiencyBonus * (skill.expertise ? 2 : 1) : 0);
+
+  function addExperienceDraft(event: React.FormEvent) {
+    event.preventDefault();
+    const amount = Number(experienceAmount.trim().replace(/\s+/g, ""));
+    if (!Number.isInteger(amount) || amount <= 0) return setMessage("Введите целое положительное количество опыта");
+    setCharacter({ ...character, experience: character.experience + amount });
+    setMessage(`Добавлено ${amount.toLocaleString("ru-RU")} опыта — сохраните изменения`);
+  }
+
+  function addProficiencyDraft(event: React.FormEvent) {
+    event.preventDefault();
+    const value = newProficiency.trim();
+    if (!value) return;
+    if (sections.proficiencies.some((item) => item.trim().toLocaleLowerCase("ru") === value.toLocaleLowerCase("ru"))) return setMessage(`Владение «${value}» уже добавлено`);
+    setSections({ ...sections, proficiencies: [...sections.proficiencies, value] });
+    setNewProficiency("");
+    setMessage(`Владение «${value}» добавлено в черновик — сохраните изменения`);
+  }
 
   async function importCharacter(file: File | undefined) {
     if (!file) return;
@@ -272,7 +308,7 @@ export default function Home() {
     <main className={dark ? "app dark" : "app"}>
       <header className="topbar">
         <a className="brand" href="#top" aria-label="D&D Companion — главная">
-          <span className="brand-mark">D</span>
+          <span className="brand-mark" aria-hidden="true"><svg viewBox="0 0 100 100" focusable="false"><polygon points="50.00,3.00 55.92,29.85 75.41,10.46 65.87,36.25 92.75,30.48 70.79,47.01 96.52,56.69 69.10,58.72 85.52,80.78 61.35,67.67 63.24,95.10 50.00,71.00 36.76,95.10 38.65,67.67 14.48,80.78 30.90,58.72 3.48,56.69 29.21,47.01 7.25,30.48 34.13,36.25 24.59,10.46 44.08,29.85"/></svg></span>
           <span><strong>D&amp;D Companion</strong><small>Летопись кампании</small></span>
         </a>
         <nav aria-label="Основная навигация">
@@ -300,7 +336,8 @@ export default function Home() {
 
       <div className="page" id="top">
         <aside className="sidebar">
-          <div className="portrait" aria-label={`Портрет ${character.name}`}><span>{character.name.split(" ").map((word) => word[0]).join("").slice(0, 2)}</span></div>
+          <div className="portrait" aria-label={`Портрет ${character.name}`} style={character.portraitDataUrl ? { backgroundImage: `url(${character.portraitDataUrl})` } : undefined}>{!character.portraitDataUrl && <span>{character.name.split(" ").map((word) => word[0]).join("").slice(0, 2)}</span>}</div>
+          {privileged && <div className="portrait-actions"><input ref={portraitInput} hidden type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => { const file = event.target.files?.[0]; if (!file) return; if (!/^image\/(?:png|jpeg|webp)$/.test(file.type) || file.size > 8_000_000) { setMessage("Выберите PNG, JPEG или WebP размером до 8 МБ"); event.target.value = ""; return; } setPortraitFile(file); }}/><button type="button" onClick={() => portraitInput.current?.click()}>{character.portraitDataUrl ? "Изменить портрет" : "+ Портрет"}</button>{character.portraitDataUrl && <button type="button" onClick={() => { if (window.confirm("Удалить портрет из черновика?")) setCharacter({ ...character, portraitDataUrl: "" }); }}>Удалить</button>}</div>}
           <h1>{character.name}</h1>
           <p>{character.species} · {classesDetail.map((item) => item.className).join(" / ")} {draftLevel}</p>
           <div className="character-picker" aria-label="Персонажи кампании">
@@ -325,9 +362,15 @@ export default function Home() {
             <div><span className="eyebrow">{character.kind === "NPC" ? "Неигровой персонаж" : "Лист персонажа"}</span><h2>{character.name}</h2></div>
             <span className={dirty || message !== "Все изменения сохранены" ? "status dirty" : "status"}>{dirty ? "Есть несохранённые изменения" : message}</span>
           </div>
+          <section className="experience-bar" aria-label="Прогресс опыта">
+            <div className="experience-copy"><div><strong>{experienceProgress.currentExperience.toLocaleString("ru-RU")} опыта</strong>{privileged && <form className="experience-add" onSubmit={addExperienceDraft}><input aria-label="Количество добавляемого опыта" type="number" min="1" step="1" value={experienceAmount} onChange={(event) => setExperienceAmount(event.target.value)}/><button type="submit">+ Опыт</button></form>}</div><span>{experienceProgress.nextLevel === null ? "Максимальный уровень" : experienceProgress.ready ? `Доступен ${experienceProgress.nextLevel} уровень` : `До ${experienceProgress.nextLevel} уровня: ${experienceProgress.remaining.toLocaleString("ru-RU")}`}</span></div>
+            <div className="experience-track" role="progressbar" aria-valuemin={experienceProgress.currentThreshold} aria-valuemax={experienceProgress.nextThreshold ?? experienceProgress.currentThreshold} aria-valuenow={Math.min(experienceProgress.currentExperience, experienceProgress.nextThreshold ?? experienceProgress.currentExperience)} aria-valuetext={`${Math.round(experienceProgress.percent)}%`}><span style={{ width: `${experienceProgress.percent}%` }}/></div>
+            <small>{experienceProgress.nextThreshold === null ? "20 уровень" : `${experienceProgress.currentExperience.toLocaleString("ru-RU")} / ${experienceProgress.nextThreshold.toLocaleString("ru-RU")}`}</small>
+          </section>
 
           {privileged && campaign && <section className="master-panel">
-            <header><div><span className="eyebrow">Управление</span><h3>{profile === "Overseer" ? "Панель Overseer" : "Панель Мастера"}</h3></div><button className="secondary" onClick={addClassDraft}>+ Класс персонажа</button></header>
+            <header><div><span className="eyebrow">Управление</span><h3>{profile === "Overseer" ? "Панель Overseer" : "Панель Мастера"}</h3></div><button className="secondary" onClick={() => setClassDraftOpen(!classDraftOpen)}>+ Класс персонажа</button></header>
+            {classDraftOpen && <form className="new-class-form" onSubmit={addClassDraft}><input aria-label="Название нового класса" placeholder="Класс" value={newClassDraft.className} onChange={(event) => setNewClassDraft({ ...newClassDraft, className: event.target.value })}/><input aria-label="Подкласс нового класса" placeholder="Подкласс (необязательно)" value={newClassDraft.subclassName} onChange={(event) => setNewClassDraft({ ...newClassDraft, subclassName: event.target.value })}/><input aria-label="Уровень нового класса" type="number" min="1" max="20" value={newClassDraft.level} onChange={(event) => setNewClassDraft({ ...newClassDraft, level: Number(event.target.value) })}/><button type="submit">Добавить</button><button type="button" onClick={() => setClassDraftOpen(false)}>Отмена</button></form>}
             {activeProfile && <ManagementPanel key={`${activeProfile.id}:${campaign.id}`} actor={activeProfile} campaign={campaign} profiles={profiles} characters={characters} onChanged={() => loadWorkspace(activeProfile.id, campaign.id)} onCampaignCreated={(campaignId) => loadWorkspace(activeProfile.id, campaignId)} onMessage={setMessage}/>}
             <div className="system-fields">
               <label>Имя<input value={character.name} onChange={(event) => setCharacter({ ...character, name: event.target.value })}/></label>
@@ -342,6 +385,7 @@ export default function Home() {
             </div>
             <div className="class-editor">{classesDetail.map((item, index) => <div key={`${item.className}-${index}`}><input value={item.className} aria-label="Класс" onChange={(event) => setClassesDetail(classesDetail.map((entry, entryIndex) => entryIndex === index ? { ...entry, className: event.target.value } : entry))}/><input value={item.subclassName} placeholder="Подкласс" aria-label="Подкласс" onChange={(event) => setClassesDetail(classesDetail.map((entry, entryIndex) => entryIndex === index ? { ...entry, subclassName: event.target.value } : entry))}/><input type="number" min="1" max="20" value={item.level} aria-label="Уровень класса" onChange={(event) => setClassesDetail(classesDetail.map((entry, entryIndex) => entryIndex === index ? { ...entry, level: Number(event.target.value) } : entry))}/>{classesDetail.length > 1 && <button onClick={() => setClassesDetail(classesDetail.filter((_, entryIndex) => entryIndex !== index))}>×</button>}</div>)}</div>
           </section>}
+          {activeProfile && characterId && <LevelUpPanel profileId={activeProfile.id} characterId={characterId} revision={revision} classes={classesDetail} privileged={privileged} onApplied={() => loadWorkspace(activeProfile.id, campaign?.id)} onMessage={setMessage}/>}
 
           <div className="ability-grid">
             {abilities.map(([name, score]) => {
@@ -352,6 +396,7 @@ export default function Home() {
           </div>
 
           <div className="sheet-grid">
+            <div className="sheet-column sheet-column-primary">
             <section className="panel" id="combat">
               <header><h3>Состояние</h3><span>Игрок может изменять</span></header>
               <div className="vitals">
@@ -361,6 +406,29 @@ export default function Home() {
                 <div className="vital"><span>Инициатива</span><strong>+1</strong></div>
               </div>
               <div className="death-saves"><span>Спасброски от смерти</span><div>Успехи ○ ○ ○</div><div>Провалы ○ ○ ○</div></div>
+            </section>
+
+            <section className="panel" id="features">
+              <header><h3>Особенности</h3><span>Управляет Мастер</span></header>
+              {!sections.features.length && !resources.length && <p className="section-empty">Особенности не добавлены</p>}
+              {sections.features.map((feature, index) => <div className="feature" key={`${feature.name}-${index}`}>{privileged ? <><div className="feature-heading"><input value={feature.name} onChange={(event) => setSections({ ...sections, features: sections.features.map((item, itemIndex) => itemIndex === index ? { ...item, name: event.target.value } : item) })}/><button type="button" aria-label={`Удалить особенность: ${feature.name}`} title="Удалить особенность" onClick={() => { if (window.confirm(`Удалить особенность «${feature.name}» из черновика?`)) setSections({ ...sections, features: sections.features.filter((_, itemIndex) => itemIndex !== index) }); }}>×</button></div><textarea rows={2} value={feature.description} onChange={(event) => setSections({ ...sections, features: sections.features.map((item, itemIndex) => itemIndex === index ? { ...item, description: event.target.value } : item) })}/></> : <><strong>{feature.name}</strong><p>{feature.description}</p></>}</div>)}
+              {privileged && <button className="inline-add" onClick={() => setSections({ ...sections, features: [...sections.features, { name: "Новая особенность", description: "" }] })}>+ Особенность</button>}
+              {resources.map((resource) => <div className="resource-row" key={resource.id}><span>{resource.name}</span><button aria-label={`Восстановить ресурс: ${resource.name}`} disabled={resource.spent <= 0} onClick={() => setResources(restoreCharacterResource(resources, resource.id))}>−</button><strong>{resource.maximum - resource.spent} / {resource.maximum}</strong><button aria-label={`Потратить ресурс: ${resource.name}`} disabled={resource.spent >= resource.maximum} onClick={() => setResources(spendCharacterResource(resources, resource.id))}>+</button></div>)}
+            </section>
+
+            <section className="panel" id="inventory">
+              <header><h3>Снаряжение</h3><span>Переносимый вес</span></header>
+              <ul className="equipment">{equipment.length ? equipment.slice(0, 8).map((item) => <li key={item}>{item}</li>) : <li>Снаряжение не указано</li>}</ul>
+              <label className="coins"><span>Золотые монеты</span><input type="number" min="0" value={coins} onChange={(e) => setCoins(Number(e.target.value))}/></label>
+            </section>
+
+            </div>
+            <div className="sheet-column sheet-column-secondary">
+            <section className="panel attacks-panel">
+              <header><h3>Атаки</h3><span>Оружие и действия</span></header>
+              {!sections.attacks.length && <p className="section-empty">Атаки не добавлены</p>}
+              {sections.attacks.map((attack, index) => <div className="attack-row" key={`${attack.name}-${index}`}>{privileged ? <><input value={attack.name} onChange={(event) => setSections({ ...sections, attacks: sections.attacks.map((item, itemIndex) => itemIndex === index ? { ...item, name: event.target.value } : item) })}/><input value={attack.attackBonus} onChange={(event) => setSections({ ...sections, attacks: sections.attacks.map((item, itemIndex) => itemIndex === index ? { ...item, attackBonus: event.target.value } : item) })}/><input value={attack.damage} onChange={(event) => setSections({ ...sections, attacks: sections.attacks.map((item, itemIndex) => itemIndex === index ? { ...item, damage: event.target.value } : item) })}/></> : <><strong>{attack.name}</strong><span>{attack.attackBonus}</span><span>{attack.damage}</span></>}</div>)}
+              {privileged && <button className="inline-add" onClick={() => setSections({ ...sections, attacks: [...sections.attacks, { name: "Новая атака", attackBonus: "+0", damage: "" }] })}>+ Атака</button>}
             </section>
 
             <section className="panel skills">
@@ -373,47 +441,35 @@ export default function Home() {
               {privileged && <button className="inline-add" onClick={() => setSections({ ...sections, skills: [...sections.skills, { name: "Новый навык", ability: "wisdom", proficient: false, expertise: false }] })}>+ Навык</button>}
             </section>
 
-            <section className="panel" id="features">
-              <header><h3>Особенности</h3><span>Управляет Мастер</span></header>
-              {!sections.features.length && !resources.length && <p className="section-empty">Особенности не добавлены</p>}
-              {sections.features.map((feature, index) => <div className="feature" key={`${feature.name}-${index}`}>{privileged ? <><div className="feature-heading"><input value={feature.name} onChange={(event) => setSections({ ...sections, features: sections.features.map((item, itemIndex) => itemIndex === index ? { ...item, name: event.target.value } : item) })}/><button type="button" aria-label={`Удалить особенность: ${feature.name}`} title="Удалить особенность" onClick={() => { if (window.confirm(`Удалить особенность «${feature.name}» из черновика?`)) setSections({ ...sections, features: sections.features.filter((_, itemIndex) => itemIndex !== index) }); }}>×</button></div><textarea rows={2} value={feature.description} onChange={(event) => setSections({ ...sections, features: sections.features.map((item, itemIndex) => itemIndex === index ? { ...item, description: event.target.value } : item) })}/></> : <><strong>{feature.name}</strong><p>{feature.description}</p></>}</div>)}
-              {privileged && <button className="inline-add" onClick={() => setSections({ ...sections, features: [...sections.features, { name: "Новая особенность", description: "" }] })}>+ Особенность</button>}
-              {resources.map((resource) => <div className="resource-row" key={resource.id}><span>{resource.name}</span><button aria-label={`Восстановить ресурс: ${resource.name}`} disabled={resource.spent <= 0} onClick={() => setResources(restoreCharacterResource(resources, resource.id))}>−</button><strong>{resource.maximum - resource.spent} / {resource.maximum}</strong><button aria-label={`Потратить ресурс: ${resource.name}`} disabled={resource.spent >= resource.maximum} onClick={() => setResources(spendCharacterResource(resources, resource.id))}>+</button></div>)}
-            </section>
-
-            <section className="panel attacks-panel">
-              <header><h3>Атаки</h3><span>Оружие и действия</span></header>
-              {!sections.attacks.length && <p className="section-empty">Атаки не добавлены</p>}
-              {sections.attacks.map((attack, index) => <div className="attack-row" key={`${attack.name}-${index}`}>{privileged ? <><input value={attack.name} onChange={(event) => setSections({ ...sections, attacks: sections.attacks.map((item, itemIndex) => itemIndex === index ? { ...item, name: event.target.value } : item) })}/><input value={attack.attackBonus} onChange={(event) => setSections({ ...sections, attacks: sections.attacks.map((item, itemIndex) => itemIndex === index ? { ...item, attackBonus: event.target.value } : item) })}/><input value={attack.damage} onChange={(event) => setSections({ ...sections, attacks: sections.attacks.map((item, itemIndex) => itemIndex === index ? { ...item, damage: event.target.value } : item) })}/></> : <><strong>{attack.name}</strong><span>{attack.attackBonus}</span><span>{attack.damage}</span></>}</div>)}
-              {privileged && <button className="inline-add" onClick={() => setSections({ ...sections, attacks: [...sections.attacks, { name: "Новая атака", attackBonus: "+0", damage: "" }] })}>+ Атака</button>}
-            </section>
-
-            <section className="panel">
+            <section className="panel" id="proficiencies">
               <header><h3>Владения</h3><span>Оружие, доспехи, инструменты и языки</span></header>
               <div className="tag-list">{sections.proficiencies.map((item, index) => <span key={`${item}-${index}`}>{item}{privileged && <button type="button" aria-label={`Удалить владение: ${item}`} title="Удалить владение" onClick={() => { if (window.confirm(`Удалить владение «${item}» из черновика?`)) setSections({ ...sections, proficiencies: sections.proficiencies.filter((_, itemIndex) => itemIndex !== index) }); }}>×</button>}</span>)}</div>
               {!sections.proficiencies.length && <p className="section-empty">Владения не добавлены</p>}
-              {privileged && <button className="inline-add" onClick={() => { const value = window.prompt("Новое владение"); if (value) setSections({ ...sections, proficiencies: [...sections.proficiencies, value] }); }}>+ Владение</button>}
-            </section>
-
-            <section className="panel" id="inventory">
-              <header><h3>Снаряжение</h3><span>Переносимый вес</span></header>
-              <ul className="equipment">{equipment.length ? equipment.slice(0, 8).map((item) => <li key={item}>{item}</li>) : <li>Снаряжение не указано</li>}</ul>
-              <label className="coins"><span>Золотые монеты</span><input type="number" min="0" value={coins} onChange={(e) => setCoins(Number(e.target.value))}/></label>
+              {privileged && <form className="proficiency-add" onSubmit={addProficiencyDraft}><input aria-label="Новое владение" placeholder="Новое владение" value={newProficiency} onChange={(event) => setNewProficiency(event.target.value)}/><button type="submit">Добавить</button></form>}
             </section>
 
             <section className="panel notes" id="notes">
               <header><h3>Заметки персонажа</h3><span>Личные записи</span></header>
-              <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={4}/>
+              <label className="note-entry"><span>Основная заметка</span><textarea aria-label="Основная заметка персонажа" value={notes} onChange={(e) => setNotes(e.target.value)} rows={4}/></label>
+              {sections.playerNotes.map((note, index) => <label className="note-entry" key={note.id}><span>Дополнительная заметка {index + 1}</span><div><textarea aria-label={`Дополнительная заметка ${index + 1}`} value={note.text} rows={3} onChange={(event) => setSections({ ...sections, playerNotes: sections.playerNotes.map((item) => item.id === note.id ? { ...item, text: event.target.value } : item) })}/><button type="button" aria-label={`Удалить дополнительную заметку ${index + 1}`} onClick={() => setSections({ ...sections, playerNotes: sections.playerNotes.filter((item) => item.id !== note.id) })}>×</button></div></label>)}
+              <button className="inline-add" type="button" onClick={() => setSections({ ...sections, playerNotes: [...sections.playerNotes, { id: crypto.randomUUID(), text: "" }] })}>+ Дополнительная заметка</button>
+              {privileged && <div className="gm-notes"><header><strong>Заметки Мастера</strong><span>Видны только Мастеру и Overseer</span></header>{sections.gmNotes.map((note, index) => <label className="note-entry" key={note.id}><span>Скрытая заметка {index + 1}</span><div><textarea aria-label={`Скрытая заметка Мастера ${index + 1}`} value={note.text} rows={3} onChange={(event) => setSections({ ...sections, gmNotes: sections.gmNotes.map((item) => item.id === note.id ? { ...item, text: event.target.value } : item) })}/><button type="button" aria-label={`Удалить скрытую заметку ${index + 1}`} onClick={() => setSections({ ...sections, gmNotes: sections.gmNotes.filter((item) => item.id !== note.id) })}>×</button></div></label>)}<button className="inline-add" type="button" onClick={() => setSections({ ...sections, gmNotes: [...sections.gmNotes, { id: crypto.randomUUID(), text: "" }] })}>+ Заметка Мастера</button></div>}
             </section>
 
+            </div>
             {activeProfile && characterId && <Spellbook profileId={activeProfile.id} characterId={characterId} privileged={privileged} onMessage={setMessage}/>}
           </div>
         </section>
       </div>
 
+      {portraitFile && <PortraitCropper
+        file={portraitFile}
+        onCancel={() => { setPortraitFile(null); if (portraitInput.current) portraitInput.current.value = ""; }}
+        onApply={(portraitDataUrl) => { setCharacter({ ...character, portraitDataUrl }); setPortraitFile(null); if (portraitInput.current) portraitInput.current.value = ""; setMessage("Портрет добавлен в черновик — сохраните изменения"); }}
+      />}
       <footer className="savebar">
         <span>{dirty ? "Черновик хранится только на этом устройстве" : `Последнее сохранение · только что · ${profile}`}</span>
-        <button className="secondary" disabled={!dirty} onClick={() => { setHp(saved.hp); setCoins(saved.coins); setNotes(saved.notes); setCharacter(savedCharacter); setClassesDetail(savedClasses); setSections(savedSections); setResources(savedResources); }}>Отменить</button>
+        <button className="secondary" disabled={!dirty} onClick={() => { setHp(saved.hp); setCoins(saved.coins); setNotes(saved.notes); setCharacter(savedCharacter); setClassesDetail(savedClasses); setSections(savedSections); setResources(savedResources); setMessage("Все изменения сохранены"); }}>Отменить</button>
         <button className="primary" disabled={!characterId || !dirty || saving} onClick={saveChanges}>{saving ? "Сохраняем…" : "Сохранить изменения"}</button>
       </footer>
     </main>

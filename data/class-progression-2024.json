@@ -1,0 +1,4803 @@
+{
+  "source": "SRD 5.2.1 + PHB 2024 RU v2.9",
+  "version": "1.0.0",
+  "classes": {
+    "barbarian": {
+      "nameRu": "Варвар",
+      "levels": [
+        {
+          "level": 1,
+          "featuresRu": [
+            "Ярость",
+            "Защита без доспехов",
+            "Оружейные приёмы"
+          ],
+          "featuresEn": [
+            "Rage",
+            "Unarmored Defense",
+            "Weapon Mastery"
+          ],
+          "values": {
+            "Rages": "2",
+            "Rage Damage": "+2",
+            "Weapon Mastery": "2"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 2,
+          "featuresRu": [
+            "Безрассудная атака",
+            "Чувство опасности"
+          ],
+          "featuresEn": [
+            "Danger Sense",
+            "Reckless Attack"
+          ],
+          "values": {
+            "Rages": "2",
+            "Rage Damage": "+2",
+            "Weapon Mastery": "2"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 3,
+          "featuresRu": [
+            "Подкласс варвара",
+            "Первобытное знание"
+          ],
+          "featuresEn": [
+            "Barbarian Subclass",
+            "Primal Knowledge"
+          ],
+          "values": {
+            "Rages": "3",
+            "Rage Damage": "+2",
+            "Weapon Mastery": "2"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 4,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Rages": "3",
+            "Rage Damage": "+2",
+            "Weapon Mastery": "3"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 5,
+          "featuresRu": [
+            "Дополнительная атака",
+            "Быстрое передвижение"
+          ],
+          "featuresEn": [
+            "Extra Attack",
+            "Fast Movement"
+          ],
+          "values": {
+            "Rages": "3",
+            "Rage Damage": "+2",
+            "Weapon Mastery": "3"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 6,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Rages": "4",
+            "Rage Damage": "+2",
+            "Weapon Mastery": "3"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 7,
+          "featuresRu": [
+            "Дикий инстинкт",
+            "Инстинктивный бросок"
+          ],
+          "featuresEn": [
+            "Feral Instinct",
+            "Instinctive Pounce"
+          ],
+          "values": {
+            "Rages": "4",
+            "Rage Damage": "+2",
+            "Weapon Mastery": "3"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 8,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Rages": "4",
+            "Rage Damage": "+2",
+            "Weapon Mastery": "3"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 9,
+          "featuresRu": [
+            "Жестокий удар"
+          ],
+          "featuresEn": [
+            "Brutal Strike"
+          ],
+          "values": {
+            "Rages": "4",
+            "Rage Damage": "+3",
+            "Weapon Mastery": "3"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 10,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Rages": "4",
+            "Rage Damage": "+3",
+            "Weapon Mastery": "4"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 11,
+          "featuresRu": [
+            "Непреклонная ярость"
+          ],
+          "featuresEn": [
+            "Relentless Rage"
+          ],
+          "values": {
+            "Rages": "4",
+            "Rage Damage": "+3",
+            "Weapon Mastery": "4"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 12,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Rages": "5",
+            "Rage Damage": "+3",
+            "Weapon Mastery": "4"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 13,
+          "featuresRu": [
+            "Улучшенный Жестокий удар"
+          ],
+          "featuresEn": [
+            "Improved Brutal Strike"
+          ],
+          "values": {
+            "Rages": "5",
+            "Rage Damage": "+3",
+            "Weapon Mastery": "4"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 14,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Rages": "5",
+            "Rage Damage": "+3",
+            "Weapon Mastery": "4"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 15,
+          "featuresRu": [
+            "Непрерывная ярость"
+          ],
+          "featuresEn": [
+            "Persistent Rage"
+          ],
+          "values": {
+            "Rages": "5",
+            "Rage Damage": "+3",
+            "Weapon Mastery": "4"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 16,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Rages": "5",
+            "Rage Damage": "+4",
+            "Weapon Mastery": "4"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 17,
+          "featuresRu": [
+            "Улучшенный Жестокий удар"
+          ],
+          "featuresEn": [
+            "Improved Brutal Strike"
+          ],
+          "values": {
+            "Rages": "6",
+            "Rage Damage": "+4",
+            "Weapon Mastery": "4"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 18,
+          "featuresRu": [
+            "Неукротимая мощь"
+          ],
+          "featuresEn": [
+            "Indomitable Might"
+          ],
+          "values": {
+            "Rages": "6",
+            "Rage Damage": "+4",
+            "Weapon Mastery": "4"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 19,
+          "featuresRu": [
+            "Эпическая черта"
+          ],
+          "featuresEn": [
+            "Epic Boon"
+          ],
+          "values": {
+            "Rages": "6",
+            "Rage Damage": "+4",
+            "Weapon Mastery": "4"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 20,
+          "featuresRu": [
+            "Первородный чемпион"
+          ],
+          "featuresEn": [
+            "Primal Champion"
+          ],
+          "values": {
+            "Rages": "6",
+            "Rage Damage": "+4",
+            "Weapon Mastery": "4"
+          },
+          "proficiencyBonus": 6
+        }
+      ],
+      "columns": [
+        "Rages",
+        "Rage Damage",
+        "Weapon Mastery"
+      ]
+    },
+    "bard": {
+      "nameRu": "Бард",
+      "levels": [
+        {
+          "level": 1,
+          "featuresRu": [
+            "Использование заклинаний",
+            "Бардовское вдохновение"
+          ],
+          "featuresEn": [
+            "Bardic Inspiration",
+            "Spellcasting"
+          ],
+          "values": {
+            "Bardic Die": "D6",
+            "Cantrips": "2",
+            "Prepared Spells": "4",
+            "Slot 1": "2",
+            "Slot 2": "—",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 2,
+          "featuresRu": [
+            "Компетентность",
+            "Мастер на все руки"
+          ],
+          "featuresEn": [
+            "Expertise",
+            "Jack of All Trades"
+          ],
+          "values": {
+            "Bardic Die": "D6",
+            "Cantrips": "2",
+            "Prepared Spells": "5",
+            "Slot 1": "3",
+            "Slot 2": "—",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 3,
+          "featuresRu": [
+            "Подкласс барда"
+          ],
+          "featuresEn": [
+            "Bard Subclass"
+          ],
+          "values": {
+            "Bardic Die": "D6",
+            "Cantrips": "2",
+            "Prepared Spells": "6",
+            "Slot 1": "4",
+            "Slot 2": "2",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 4,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Bardic Die": "D6",
+            "Cantrips": "3",
+            "Prepared Spells": "7",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 5,
+          "featuresRu": [
+            "Источник вдохновения"
+          ],
+          "featuresEn": [
+            "Font of Inspiration"
+          ],
+          "values": {
+            "Bardic Die": "D8",
+            "Cantrips": "3",
+            "Prepared Spells": "9",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "2",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 6,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Bardic Die": "D8",
+            "Cantrips": "3",
+            "Prepared Spells": "10",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 7,
+          "featuresRu": [
+            "Контрочарование"
+          ],
+          "featuresEn": [
+            "Countercharm"
+          ],
+          "values": {
+            "Bardic Die": "D8",
+            "Cantrips": "3",
+            "Prepared Spells": "11",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "1",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 8,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Bardic Die": "D8",
+            "Cantrips": "3",
+            "Prepared Spells": "12",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "2",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 9,
+          "featuresRu": [
+            "Компетентность"
+          ],
+          "featuresEn": [
+            "Expertise"
+          ],
+          "values": {
+            "Bardic Die": "D8",
+            "Cantrips": "3",
+            "Prepared Spells": "14",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "1",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 10,
+          "featuresRu": [
+            "Магические секреты"
+          ],
+          "featuresEn": [
+            "Magical Secrets"
+          ],
+          "values": {
+            "Bardic Die": "D10",
+            "Cantrips": "4",
+            "Prepared Spells": "15",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 11,
+          "featuresRu": [],
+          "featuresEn": [],
+          "values": {
+            "Bardic Die": "D10",
+            "Cantrips": "4",
+            "Prepared Spells": "16",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 12,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Bardic Die": "D10",
+            "Cantrips": "4",
+            "Prepared Spells": "16",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 13,
+          "featuresRu": [],
+          "featuresEn": [],
+          "values": {
+            "Bardic Die": "D10",
+            "Cantrips": "4",
+            "Prepared Spells": "17",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 14,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Bardic Die": "D10",
+            "Cantrips": "4",
+            "Prepared Spells": "17",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 15,
+          "featuresRu": [],
+          "featuresEn": [],
+          "values": {
+            "Bardic Die": "D12",
+            "Cantrips": "4",
+            "Prepared Spells": "18",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "1",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 16,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Bardic Die": "D12",
+            "Cantrips": "4",
+            "Prepared Spells": "18",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "1",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 17,
+          "featuresRu": [],
+          "featuresEn": [],
+          "values": {
+            "Bardic Die": "D12",
+            "Cantrips": "4",
+            "Prepared Spells": "19",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "1",
+            "Slot 9": "1"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 18,
+          "featuresRu": [
+            "Превосходное вдохновение"
+          ],
+          "featuresEn": [
+            "Superior Inspiration"
+          ],
+          "values": {
+            "Bardic Die": "D12",
+            "Cantrips": "4",
+            "Prepared Spells": "20",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "3",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "1",
+            "Slot 9": "1"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 19,
+          "featuresRu": [
+            "Эпическая черта"
+          ],
+          "featuresEn": [
+            "Epic Boon"
+          ],
+          "values": {
+            "Bardic Die": "D12",
+            "Cantrips": "4",
+            "Prepared Spells": "21",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "3",
+            "Slot 6": "2",
+            "Slot 7": "1",
+            "Slot 8": "1",
+            "Slot 9": "1"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 20,
+          "featuresRu": [
+            "Слова творения"
+          ],
+          "featuresEn": [
+            "Words of Creation"
+          ],
+          "values": {
+            "Bardic Die": "D12",
+            "Cantrips": "4",
+            "Prepared Spells": "22",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "3",
+            "Slot 6": "2",
+            "Slot 7": "2",
+            "Slot 8": "1",
+            "Slot 9": "1"
+          },
+          "proficiencyBonus": 6
+        }
+      ],
+      "columns": [
+        "Bardic Die",
+        "Cantrips",
+        "Prepared Spells",
+        "Slot 1",
+        "Slot 2",
+        "Slot 3",
+        "Slot 4",
+        "Slot 5",
+        "Slot 6",
+        "Slot 7",
+        "Slot 8",
+        "Slot 9"
+      ]
+    },
+    "cleric": {
+      "nameRu": "Жрец",
+      "levels": [
+        {
+          "level": 1,
+          "featuresRu": [
+            "Использование заклинаний",
+            "Божественный порядок"
+          ],
+          "featuresEn": [
+            "Spellcasting",
+            "Divine Order"
+          ],
+          "values": {
+            "Channel Divinity": "—",
+            "Cantrips": "3",
+            "Prepared Spells": "4",
+            "Slot 1": "2",
+            "Slot 2": "—",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 2,
+          "featuresRu": [
+            "Божественный канал"
+          ],
+          "featuresEn": [
+            "Channel Divinity"
+          ],
+          "values": {
+            "Channel Divinity": "2",
+            "Cantrips": "3",
+            "Prepared Spells": "5",
+            "Slot 1": "3",
+            "Slot 2": "—",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 3,
+          "featuresRu": [
+            "Подкласс жреца"
+          ],
+          "featuresEn": [
+            "Cleric Subclass"
+          ],
+          "values": {
+            "Channel Divinity": "2",
+            "Cantrips": "3",
+            "Prepared Spells": "6",
+            "Slot 1": "4",
+            "Slot 2": "2",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 4,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Channel Divinity": "2",
+            "Cantrips": "4",
+            "Prepared Spells": "7",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 5,
+          "featuresRu": [
+            "Испепеление нежити"
+          ],
+          "featuresEn": [
+            "Sear Undead"
+          ],
+          "values": {
+            "Channel Divinity": "2",
+            "Cantrips": "4",
+            "Prepared Spells": "9",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "2",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 6,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Channel Divinity": "3",
+            "Cantrips": "4",
+            "Prepared Spells": "10",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 7,
+          "featuresRu": [
+            "Благословлённые удары"
+          ],
+          "featuresEn": [
+            "Blessed Strikes"
+          ],
+          "values": {
+            "Channel Divinity": "3",
+            "Cantrips": "4",
+            "Prepared Spells": "11",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "1",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 8,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Channel Divinity": "3",
+            "Cantrips": "4",
+            "Prepared Spells": "12",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "2",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 9,
+          "featuresRu": [],
+          "featuresEn": [],
+          "values": {
+            "Channel Divinity": "3",
+            "Cantrips": "4",
+            "Prepared Spells": "14",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "1",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 10,
+          "featuresRu": [
+            "Божественное вмешательство"
+          ],
+          "featuresEn": [
+            "Divine Intervention"
+          ],
+          "values": {
+            "Channel Divinity": "3",
+            "Cantrips": "5",
+            "Prepared Spells": "15",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 11,
+          "featuresRu": [],
+          "featuresEn": [],
+          "values": {
+            "Channel Divinity": "3",
+            "Cantrips": "5",
+            "Prepared Spells": "16",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 12,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Channel Divinity": "3",
+            "Cantrips": "5",
+            "Prepared Spells": "16",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 13,
+          "featuresRu": [],
+          "featuresEn": [],
+          "values": {
+            "Channel Divinity": "3",
+            "Cantrips": "5",
+            "Prepared Spells": "17",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 14,
+          "featuresRu": [
+            "Улучшенные Благословлённые удары"
+          ],
+          "featuresEn": [
+            "Improved Blessed Strikes"
+          ],
+          "values": {
+            "Channel Divinity": "3",
+            "Cantrips": "5",
+            "Prepared Spells": "17",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 15,
+          "featuresRu": [],
+          "featuresEn": [],
+          "values": {
+            "Channel Divinity": "3",
+            "Cantrips": "5",
+            "Prepared Spells": "18",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "1",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 16,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Channel Divinity": "3",
+            "Cantrips": "5",
+            "Prepared Spells": "18",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "1",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 17,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Channel Divinity": "3",
+            "Cantrips": "5",
+            "Prepared Spells": "19",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "1",
+            "Slot 9": "1"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 18,
+          "featuresRu": [],
+          "featuresEn": [],
+          "values": {
+            "Channel Divinity": "4",
+            "Cantrips": "5",
+            "Prepared Spells": "20",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "3",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "1",
+            "Slot 9": "1"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 19,
+          "featuresRu": [
+            "Эпическая черта"
+          ],
+          "featuresEn": [
+            "Epic Boon"
+          ],
+          "values": {
+            "Channel Divinity": "4",
+            "Cantrips": "5",
+            "Prepared Spells": "21",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "3",
+            "Slot 6": "2",
+            "Slot 7": "1",
+            "Slot 8": "1",
+            "Slot 9": "1"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 20,
+          "featuresRu": [
+            "Великое Божественное вмешательство"
+          ],
+          "featuresEn": [
+            "Greater Divine Intervention"
+          ],
+          "values": {
+            "Channel Divinity": "4",
+            "Cantrips": "5",
+            "Prepared Spells": "22",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "3",
+            "Slot 6": "2",
+            "Slot 7": "2",
+            "Slot 8": "1",
+            "Slot 9": "1"
+          },
+          "proficiencyBonus": 6
+        }
+      ],
+      "columns": [
+        "Channel Divinity",
+        "Cantrips",
+        "Prepared Spells",
+        "Slot 1",
+        "Slot 2",
+        "Slot 3",
+        "Slot 4",
+        "Slot 5",
+        "Slot 6",
+        "Slot 7",
+        "Slot 8",
+        "Slot 9"
+      ]
+    },
+    "druid": {
+      "nameRu": "Друид",
+      "levels": [
+        {
+          "level": 1,
+          "featuresRu": [
+            "Использование заклинаний",
+            "Друидический язык",
+            "Первобытный порядок"
+          ],
+          "featuresEn": [
+            "Spellcasting",
+            "Druidic",
+            "Primal Order"
+          ],
+          "values": {
+            "Wild Shape": "—",
+            "Cantrips": "2",
+            "Prepared Spells": "4",
+            "Slot 1": "2",
+            "Slot 2": "—",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 2,
+          "featuresRu": [
+            "Дикая форма",
+            "Дикий компаньон"
+          ],
+          "featuresEn": [
+            "Wild Shape",
+            "Wild Companion"
+          ],
+          "values": {
+            "Wild Shape": "2",
+            "Cantrips": "2",
+            "Prepared Spells": "5",
+            "Slot 1": "3",
+            "Slot 2": "—",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 3,
+          "featuresRu": [
+            "Подкласс друида"
+          ],
+          "featuresEn": [
+            "Druid Subclass"
+          ],
+          "values": {
+            "Wild Shape": "2",
+            "Cantrips": "2",
+            "Prepared Spells": "6",
+            "Slot 1": "4",
+            "Slot 2": "2",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 4,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Wild Shape": "2",
+            "Cantrips": "3",
+            "Prepared Spells": "7",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 5,
+          "featuresRu": [
+            "Восстановление дикости"
+          ],
+          "featuresEn": [
+            "Wild Resurgence"
+          ],
+          "values": {
+            "Wild Shape": "2",
+            "Cantrips": "3",
+            "Prepared Spells": "9",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "2",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 6,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Wild Shape": "3",
+            "Cantrips": "3",
+            "Prepared Spells": "10",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 7,
+          "featuresRu": [
+            "Стихийная ярость"
+          ],
+          "featuresEn": [
+            "Elemental Fury"
+          ],
+          "values": {
+            "Wild Shape": "3",
+            "Cantrips": "3",
+            "Prepared Spells": "11",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "1",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 8,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Wild Shape": "3",
+            "Cantrips": "3",
+            "Prepared Spells": "12",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "2",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 9,
+          "featuresRu": [],
+          "featuresEn": [],
+          "values": {
+            "Wild Shape": "3",
+            "Cantrips": "3",
+            "Prepared Spells": "14",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "1",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 10,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Wild Shape": "3",
+            "Cantrips": "4",
+            "Prepared Spells": "15",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 11,
+          "featuresRu": [],
+          "featuresEn": [],
+          "values": {
+            "Wild Shape": "3",
+            "Cantrips": "4",
+            "Prepared Spells": "16",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 12,
+          "featuresRu": [
+            "Улучшение Характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Wild Shape": "3",
+            "Cantrips": "4",
+            "Prepared Spells": "16",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 13,
+          "featuresRu": [],
+          "featuresEn": [],
+          "values": {
+            "Wild Shape": "3",
+            "Cantrips": "4",
+            "Prepared Spells": "17",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 14,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Wild Shape": "3",
+            "Cantrips": "4",
+            "Prepared Spells": "17",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 15,
+          "featuresRu": [
+            "Улучшенная Стихийная ярость"
+          ],
+          "featuresEn": [
+            "Improved Elemental Fury"
+          ],
+          "values": {
+            "Wild Shape": "3",
+            "Cantrips": "4",
+            "Prepared Spells": "18",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "1",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 16,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Wild Shape": "3",
+            "Cantrips": "4",
+            "Prepared Spells": "18",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "1",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 17,
+          "featuresRu": [],
+          "featuresEn": [],
+          "values": {
+            "Wild Shape": "4",
+            "Cantrips": "4",
+            "Prepared Spells": "19",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "1",
+            "Slot 9": "1"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 18,
+          "featuresRu": [
+            "Заклинания зверя"
+          ],
+          "featuresEn": [
+            "Beast Spells"
+          ],
+          "values": {
+            "Wild Shape": "4",
+            "Cantrips": "4",
+            "Prepared Spells": "20",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "3",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "1",
+            "Slot 9": "1"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 19,
+          "featuresRu": [
+            "Эпическая черта"
+          ],
+          "featuresEn": [
+            "Epic Boon"
+          ],
+          "values": {
+            "Wild Shape": "4",
+            "Cantrips": "4",
+            "Prepared Spells": "21",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "3",
+            "Slot 6": "2",
+            "Slot 7": "1",
+            "Slot 8": "1",
+            "Slot 9": "1"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 20,
+          "featuresRu": [
+            "Архидруид"
+          ],
+          "featuresEn": [
+            "Archdruid"
+          ],
+          "values": {
+            "Wild Shape": "4",
+            "Cantrips": "4",
+            "Prepared Spells": "22",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "3",
+            "Slot 6": "2",
+            "Slot 7": "2",
+            "Slot 8": "1",
+            "Slot 9": "1"
+          },
+          "proficiencyBonus": 6
+        }
+      ],
+      "columns": [
+        "Wild Shape",
+        "Cantrips",
+        "Prepared Spells",
+        "Slot 1",
+        "Slot 2",
+        "Slot 3",
+        "Slot 4",
+        "Slot 5",
+        "Slot 6",
+        "Slot 7",
+        "Slot 8",
+        "Slot 9"
+      ]
+    },
+    "fighter": {
+      "nameRu": "Воин",
+      "levels": [
+        {
+          "level": 1,
+          "featuresRu": [
+            "Боевой стиль",
+            "Второе дыхание",
+            "Оружейные приёмы"
+          ],
+          "featuresEn": [
+            "Fighting Style",
+            "Second Wind",
+            "Weapon Mastery"
+          ],
+          "values": {
+            "Second Wind": "2",
+            "Weapon Mastery": "3"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 2,
+          "featuresRu": [
+            "Всплеск действий (1 использование)",
+            "Тактический разум"
+          ],
+          "featuresEn": [
+            "Action Surge (one use)",
+            "Tactical Mind"
+          ],
+          "values": {
+            "Second Wind": "2",
+            "Weapon Mastery": "3"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 3,
+          "featuresRu": [
+            "Подкласс воина"
+          ],
+          "featuresEn": [
+            "Fighter Subclass"
+          ],
+          "values": {
+            "Second Wind": "2",
+            "Weapon Mastery": "3"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 4,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Second Wind": "3",
+            "Weapon Mastery": "4"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 5,
+          "featuresRu": [
+            "Дополнительная атака",
+            "Тактическое перемещение"
+          ],
+          "featuresEn": [
+            "Extra Attack",
+            "Tactical Shift"
+          ],
+          "values": {
+            "Second Wind": "3",
+            "Weapon Mastery": "4"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 6,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Second Wind": "3",
+            "Weapon Mastery": "4"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 7,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Second Wind": "3",
+            "Weapon Mastery": "4"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 8,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Second Wind": "3",
+            "Weapon Mastery": "4"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 9,
+          "featuresRu": [
+            "Упорный (1 использование)",
+            "Мастер тактики"
+          ],
+          "featuresEn": [
+            "Indomitable (one use)",
+            "Tactical Master"
+          ],
+          "values": {
+            "Second Wind": "3",
+            "Weapon Mastery": "4"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 10,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Second Wind": "4",
+            "Weapon Mastery": "5"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 11,
+          "featuresRu": [
+            "Две дополнительные атаки"
+          ],
+          "featuresEn": [
+            "Two Extra Attacks"
+          ],
+          "values": {
+            "Second Wind": "4",
+            "Weapon Mastery": "5"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 12,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Second Wind": "4",
+            "Weapon Mastery": "5"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 13,
+          "featuresRu": [
+            "Упорный (2 использования)",
+            "Изученные атаки"
+          ],
+          "featuresEn": [
+            "Indomitable (two uses)",
+            "Studied Attacks"
+          ],
+          "values": {
+            "Second Wind": "4",
+            "Weapon Mastery": "5"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 14,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Second Wind": "4",
+            "Weapon Mastery": "5"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 15,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Second Wind": "4",
+            "Weapon Mastery": "5"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 16,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Second Wind": "4",
+            "Weapon Mastery": "6"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 17,
+          "featuresRu": [
+            "Всплеск действий (2 использования)",
+            "Упорный (3 использования)"
+          ],
+          "featuresEn": [
+            "Action Surge (two uses)",
+            "Indomitable (three uses)"
+          ],
+          "values": {
+            "Second Wind": "4",
+            "Weapon Mastery": "6"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 18,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Second Wind": "4",
+            "Weapon Mastery": "6"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 19,
+          "featuresRu": [
+            "Эпическая черта"
+          ],
+          "featuresEn": [
+            "Epic Boon"
+          ],
+          "values": {
+            "Second Wind": "4",
+            "Weapon Mastery": "6"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 20,
+          "featuresRu": [
+            "Три дополнительные атаки"
+          ],
+          "featuresEn": [
+            "Three Extra Attacks"
+          ],
+          "values": {
+            "Second Wind": "4",
+            "Weapon Mastery": "6"
+          },
+          "proficiencyBonus": 6
+        }
+      ],
+      "columns": [
+        "Second Wind",
+        "Weapon Mastery"
+      ]
+    },
+    "monk": {
+      "nameRu": "Монах",
+      "levels": [
+        {
+          "level": 1,
+          "featuresRu": [
+            "Боевые искуства",
+            "Защита без доспехов"
+          ],
+          "featuresEn": [
+            "Martial Arts",
+            "Unarmored Defense"
+          ],
+          "values": {
+            "Martial Arts": "1d6",
+            "Focus Points": "—",
+            "Unarmored Movement": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 2,
+          "featuresRu": [
+            "Дух монаха",
+            "Движение без доспехов",
+            "Необычный метаболизм"
+          ],
+          "featuresEn": [
+            "Monk’s Focus",
+            "Unarmored Movement",
+            "Uncanny Metabolism"
+          ],
+          "values": {
+            "Martial Arts": "1d6",
+            "Focus Points": "2",
+            "Unarmored Movement": "+10 ft."
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 3,
+          "featuresRu": [
+            "Отражение атак",
+            "Подкласс монаха"
+          ],
+          "featuresEn": [
+            "Deflect Attacks",
+            "Monk Subclass"
+          ],
+          "values": {
+            "Martial Arts": "1d6",
+            "Focus Points": "3",
+            "Unarmored Movement": "+10 ft."
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 4,
+          "featuresRu": [
+            "Улучшение характеристик",
+            "Медленное падение"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement",
+            "Slow Fall"
+          ],
+          "values": {
+            "Martial Arts": "1d6",
+            "Focus Points": "4",
+            "Unarmored Movement": "+10 ft."
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 5,
+          "featuresRu": [
+            "Дополнительная Атака",
+            "Ошеломляющий удар"
+          ],
+          "featuresEn": [
+            "Extra Attack",
+            "Stunning Strike"
+          ],
+          "values": {
+            "Martial Arts": "1d8",
+            "Focus Points": "5",
+            "Unarmored Movement": "+10 ft."
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 6,
+          "featuresRu": [
+            "Усиленные удары",
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Empowered Strikes",
+            "Subclass feature"
+          ],
+          "values": {
+            "Martial Arts": "1d8",
+            "Focus Points": "6",
+            "Unarmored Movement": "+15 ft."
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 7,
+          "featuresRu": [
+            "Уклонение"
+          ],
+          "featuresEn": [
+            "Evasion"
+          ],
+          "values": {
+            "Martial Arts": "1d8",
+            "Focus Points": "7",
+            "Unarmored Movement": "+15 ft."
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 8,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Martial Arts": "1d8",
+            "Focus Points": "8",
+            "Unarmored Movement": "+15 ft."
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 9,
+          "featuresRu": [
+            "Акробатическое движение"
+          ],
+          "featuresEn": [
+            "Acrobatic Movement"
+          ],
+          "values": {
+            "Martial Arts": "1d8",
+            "Focus Points": "9",
+            "Unarmored Movement": "+15 ft."
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 10,
+          "featuresRu": [
+            "Высший дух",
+            "Самовосстановление"
+          ],
+          "featuresEn": [
+            "Heightened Focus",
+            "Self-Restoration"
+          ],
+          "values": {
+            "Martial Arts": "1d8",
+            "Focus Points": "10",
+            "Unarmored Movement": "+20 ft."
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 11,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Martial Arts": "1d10",
+            "Focus Points": "11",
+            "Unarmored Movement": "+20 ft."
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 12,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Martial Arts": "1d10",
+            "Focus Points": "12",
+            "Unarmored Movement": "+20 ft."
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 13,
+          "featuresRu": [
+            "Отражение энергии"
+          ],
+          "featuresEn": [
+            "Deflect Energy"
+          ],
+          "values": {
+            "Martial Arts": "1d10",
+            "Focus Points": "13",
+            "Unarmored Movement": "+20 ft."
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 14,
+          "featuresRu": [
+            "Дисциплина выживания"
+          ],
+          "featuresEn": [
+            "Disciplined Survivor"
+          ],
+          "values": {
+            "Martial Arts": "1d10",
+            "Focus Points": "14",
+            "Unarmored Movement": "+25 ft."
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 15,
+          "featuresRu": [
+            "Идеальный дух"
+          ],
+          "featuresEn": [
+            "Perfect Focus"
+          ],
+          "values": {
+            "Martial Arts": "1d10",
+            "Focus Points": "15",
+            "Unarmored Movement": "+25 ft."
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 16,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Martial Arts": "1d10",
+            "Focus Points": "16",
+            "Unarmored Movement": "+25 ft."
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 17,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Martial Arts": "1d12",
+            "Focus Points": "17",
+            "Unarmored Movement": "+25 ft."
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 18,
+          "featuresRu": [
+            "Превосходная защита"
+          ],
+          "featuresEn": [
+            "Superior Defense"
+          ],
+          "values": {
+            "Martial Arts": "1d12",
+            "Focus Points": "18",
+            "Unarmored Movement": "+30 ft."
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 19,
+          "featuresRu": [
+            "Эпическая черта"
+          ],
+          "featuresEn": [
+            "Epic Boon"
+          ],
+          "values": {
+            "Martial Arts": "1d12",
+            "Focus Points": "19",
+            "Unarmored Movement": "+30 ft."
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 20,
+          "featuresRu": [
+            "Тело и разум"
+          ],
+          "featuresEn": [
+            "Body and Mind"
+          ],
+          "values": {
+            "Martial Arts": "1d12",
+            "Focus Points": "20",
+            "Unarmored Movement": "+30 ft."
+          },
+          "proficiencyBonus": 6
+        }
+      ],
+      "columns": [
+        "Martial Arts",
+        "Focus Points",
+        "Unarmored Movement"
+      ]
+    },
+    "paladin": {
+      "nameRu": "Паладин",
+      "levels": [
+        {
+          "level": 1,
+          "featuresRu": [
+            "Возложение рук",
+            "Использование заклинаний",
+            "Оружейные приёмы"
+          ],
+          "featuresEn": [
+            "Lay On Hands",
+            "Spellcasting",
+            "Weapon Mastery"
+          ],
+          "values": {
+            "Channel Divinity": "—",
+            "Prepared Spells": "2",
+            "Slot 1": "2",
+            "Slot 2": "—",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 2,
+          "featuresRu": [
+            "Боевой стиль",
+            "Удар паладина"
+          ],
+          "featuresEn": [
+            "Fighting Style",
+            "Paladin’s Smite"
+          ],
+          "values": {
+            "Channel Divinity": "—",
+            "Prepared Spells": "3",
+            "Slot 1": "2",
+            "Slot 2": "—",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 3,
+          "featuresRu": [
+            "Божественный канал",
+            "Подкласс паладина"
+          ],
+          "featuresEn": [
+            "Channel Divinity",
+            "Paladin Subclass"
+          ],
+          "values": {
+            "Channel Divinity": "2",
+            "Prepared Spells": "4",
+            "Slot 1": "3",
+            "Slot 2": "—",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 4,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Channel Divinity": "2",
+            "Prepared Spells": "5",
+            "Slot 1": "3",
+            "Slot 2": "—",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 5,
+          "featuresRu": [
+            "Дополнительная атака",
+            "Верный скакун"
+          ],
+          "featuresEn": [
+            "Extra Attack",
+            "Faithful Steed"
+          ],
+          "values": {
+            "Channel Divinity": "2",
+            "Prepared Spells": "6",
+            "Slot 1": "4",
+            "Slot 2": "2",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 6,
+          "featuresRu": [
+            "Аура защиты"
+          ],
+          "featuresEn": [
+            "Aura of Protection"
+          ],
+          "values": {
+            "Channel Divinity": "2",
+            "Prepared Spells": "6",
+            "Slot 1": "4",
+            "Slot 2": "2",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 7,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Channel Divinity": "2",
+            "Prepared Spells": "7",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 8,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Channel Divinity": "2",
+            "Prepared Spells": "7",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 9,
+          "featuresRu": [
+            "Изгнание врагов"
+          ],
+          "featuresEn": [
+            "Abjure Foes"
+          ],
+          "values": {
+            "Channel Divinity": "2",
+            "Prepared Spells": "9",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "2",
+            "Slot 4": "—",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 10,
+          "featuresRu": [
+            "Аура отваги"
+          ],
+          "featuresEn": [
+            "Aura of Courage"
+          ],
+          "values": {
+            "Channel Divinity": "2",
+            "Prepared Spells": "9",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "2",
+            "Slot 4": "—",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 11,
+          "featuresRu": [
+            "Сияющие удары"
+          ],
+          "featuresEn": [
+            "Radiant Strikes"
+          ],
+          "values": {
+            "Channel Divinity": "3",
+            "Prepared Spells": "10",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "—",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 12,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Channel Divinity": "3",
+            "Prepared Spells": "10",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "—",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 13,
+          "featuresRu": [],
+          "featuresEn": [],
+          "values": {
+            "Channel Divinity": "3",
+            "Prepared Spells": "11",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "1",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 14,
+          "featuresRu": [
+            "Исцеляющее прикосновение"
+          ],
+          "featuresEn": [
+            "Restoring Touch"
+          ],
+          "values": {
+            "Channel Divinity": "3",
+            "Prepared Spells": "11",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "1",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 15,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Channel Divinity": "3",
+            "Prepared Spells": "12",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "2",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 16,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Channel Divinity": "3",
+            "Prepared Spells": "12",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "2",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 17,
+          "featuresRu": [],
+          "featuresEn": [],
+          "values": {
+            "Channel Divinity": "3",
+            "Prepared Spells": "14",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "1"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 18,
+          "featuresRu": [
+            "Расширение ауры"
+          ],
+          "featuresEn": [
+            "Aura Expansion"
+          ],
+          "values": {
+            "Channel Divinity": "3",
+            "Prepared Spells": "14",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "1"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 19,
+          "featuresRu": [
+            "Эпическая черта"
+          ],
+          "featuresEn": [
+            "Epic Boon"
+          ],
+          "values": {
+            "Channel Divinity": "3",
+            "Prepared Spells": "15",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 20,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Channel Divinity": "3",
+            "Prepared Spells": "15",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2"
+          },
+          "proficiencyBonus": 6
+        }
+      ],
+      "columns": [
+        "Channel Divinity",
+        "Prepared Spells",
+        "Slot 1",
+        "Slot 2",
+        "Slot 3",
+        "Slot 4",
+        "Slot 5"
+      ]
+    },
+    "ranger": {
+      "nameRu": "Следопыт",
+      "levels": [
+        {
+          "level": 1,
+          "featuresRu": [
+            "Использование заклинаний",
+            "Избранный Враг",
+            "Оружейные приёмы"
+          ],
+          "featuresEn": [
+            "Spellcasting",
+            "Favored Enemy",
+            "Weapon Mastery"
+          ],
+          "values": {
+            "Favored Enemy": "2",
+            "Prepared Spells": "2",
+            "Slot 1": "2",
+            "Slot 2": "—",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 2,
+          "featuresRu": [
+            "Искусный исследователь",
+            "Боевой стиль"
+          ],
+          "featuresEn": [
+            "Deft Explorer",
+            "Fighting Style"
+          ],
+          "values": {
+            "Favored Enemy": "2",
+            "Prepared Spells": "3",
+            "Slot 1": "2",
+            "Slot 2": "—",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 3,
+          "featuresRu": [
+            "Подкласс следопыта"
+          ],
+          "featuresEn": [
+            "Ranger Subclass"
+          ],
+          "values": {
+            "Favored Enemy": "2",
+            "Prepared Spells": "4",
+            "Slot 1": "3",
+            "Slot 2": "—",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 4,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Favored Enemy": "2",
+            "Prepared Spells": "5",
+            "Slot 1": "3",
+            "Slot 2": "—",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 5,
+          "featuresRu": [
+            "Дополнительная атака"
+          ],
+          "featuresEn": [
+            "Extra Attack"
+          ],
+          "values": {
+            "Favored Enemy": "3",
+            "Prepared Spells": "6",
+            "Slot 1": "4",
+            "Slot 2": "2",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 6,
+          "featuresRu": [
+            "Скиталец"
+          ],
+          "featuresEn": [
+            "Roving"
+          ],
+          "values": {
+            "Favored Enemy": "3",
+            "Prepared Spells": "6",
+            "Slot 1": "4",
+            "Slot 2": "2",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 7,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Favored Enemy": "3",
+            "Prepared Spells": "7",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 8,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Favored Enemy": "3",
+            "Prepared Spells": "7",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 9,
+          "featuresRu": [
+            "Компетентность"
+          ],
+          "featuresEn": [
+            "Expertise"
+          ],
+          "values": {
+            "Favored Enemy": "4",
+            "Prepared Spells": "9",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "2",
+            "Slot 4": "—",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 10,
+          "featuresRu": [
+            "Неутомимый"
+          ],
+          "featuresEn": [
+            "Tireless"
+          ],
+          "values": {
+            "Favored Enemy": "4",
+            "Prepared Spells": "9",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "2",
+            "Slot 4": "—",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 11,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Favored Enemy": "4",
+            "Prepared Spells": "10",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "—",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 12,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Favored Enemy": "4",
+            "Prepared Spells": "10",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "—",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 13,
+          "featuresRu": [
+            "Беспощадный охотник"
+          ],
+          "featuresEn": [
+            "Relentless Hunter"
+          ],
+          "values": {
+            "Favored Enemy": "5",
+            "Prepared Spells": "11",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "1",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 14,
+          "featuresRu": [
+            "Природная завеса"
+          ],
+          "featuresEn": [
+            "Nature’s Veil"
+          ],
+          "values": {
+            "Favored Enemy": "5",
+            "Prepared Spells": "11",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "1",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 15,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Favored Enemy": "5",
+            "Prepared Spells": "12",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "2",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 16,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Favored Enemy": "5",
+            "Prepared Spells": "12",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "2",
+            "Slot 5": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 17,
+          "featuresRu": [
+            "Меткий охотник"
+          ],
+          "featuresEn": [
+            "Precise Hunter"
+          ],
+          "values": {
+            "Favored Enemy": "6",
+            "Prepared Spells": "14",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "1"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 18,
+          "featuresRu": [
+            "Дикие чувства"
+          ],
+          "featuresEn": [
+            "Feral Senses"
+          ],
+          "values": {
+            "Favored Enemy": "6",
+            "Prepared Spells": "14",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "1"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 19,
+          "featuresRu": [
+            "Эпическая черта"
+          ],
+          "featuresEn": [
+            "Epic Boon"
+          ],
+          "values": {
+            "Favored Enemy": "6",
+            "Prepared Spells": "15",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 20,
+          "featuresRu": [
+            "Убийца врагов"
+          ],
+          "featuresEn": [
+            "Foe Slayer"
+          ],
+          "values": {
+            "Favored Enemy": "6",
+            "Prepared Spells": "15",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2"
+          },
+          "proficiencyBonus": 6
+        }
+      ],
+      "columns": [
+        "Favored Enemy",
+        "Prepared Spells",
+        "Slot 1",
+        "Slot 2",
+        "Slot 3",
+        "Slot 4",
+        "Slot 5"
+      ]
+    },
+    "rogue": {
+      "nameRu": "Плут",
+      "levels": [
+        {
+          "level": 1,
+          "featuresRu": [
+            "Компетентность",
+            "Скрытая атака",
+            "Воровской жаргон",
+            "Оружейные приёмы"
+          ],
+          "featuresEn": [
+            "Expertise",
+            "Sneak Attack",
+            "Thieves’ Cant",
+            "Weapon Mastery"
+          ],
+          "values": {
+            "Sneak Attack": "1d6"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 2,
+          "featuresRu": [
+            "Хитрое действие"
+          ],
+          "featuresEn": [
+            "Cunning Action"
+          ],
+          "values": {
+            "Sneak Attack": "1d6"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 3,
+          "featuresRu": [
+            "Подкласс плута",
+            "Точное прицеливание"
+          ],
+          "featuresEn": [
+            "Rogue Subclass",
+            "Steady Aim"
+          ],
+          "values": {
+            "Sneak Attack": "2d6"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 4,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Sneak Attack": "2d6"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 5,
+          "featuresRu": [
+            "Хитрый удар",
+            "Невероятное уклонение"
+          ],
+          "featuresEn": [
+            "Cunning Strike",
+            "Uncanny Dodge"
+          ],
+          "values": {
+            "Sneak Attack": "3d6"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 6,
+          "featuresRu": [
+            "Компетентность"
+          ],
+          "featuresEn": [
+            "Expertise"
+          ],
+          "values": {
+            "Sneak Attack": "3d6"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 7,
+          "featuresRu": [
+            "Увёртливость",
+            "Надёжный талант"
+          ],
+          "featuresEn": [
+            "Evasion",
+            "Reliable Talent"
+          ],
+          "values": {
+            "Sneak Attack": "4d6"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 8,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Sneak Attack": "4d6"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 9,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Sneak Attack": "5d6"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 10,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Sneak Attack": "5d6"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 11,
+          "featuresRu": [
+            "Улучшенный хитрый удар"
+          ],
+          "featuresEn": [
+            "Improved Cunning Strike"
+          ],
+          "values": {
+            "Sneak Attack": "6d6"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 12,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Sneak Attack": "6d6"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 13,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Sneak Attack": "7d6"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 14,
+          "featuresRu": [
+            "Коварные удары"
+          ],
+          "featuresEn": [
+            "Devious Strikes"
+          ],
+          "values": {
+            "Sneak Attack": "7d6"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 15,
+          "featuresRu": [
+            "Скользкий ум"
+          ],
+          "featuresEn": [
+            "Slippery Mind"
+          ],
+          "values": {
+            "Sneak Attack": "8d6"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 16,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Sneak Attack": "8d6"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 17,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Sneak Attack": "9d6"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 18,
+          "featuresRu": [
+            "Неуловимый"
+          ],
+          "featuresEn": [
+            "Elusive"
+          ],
+          "values": {
+            "Sneak Attack": "9d6"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 19,
+          "featuresRu": [
+            "Эпическая черта"
+          ],
+          "featuresEn": [
+            "Epic Boon"
+          ],
+          "values": {
+            "Sneak Attack": "10d6"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 20,
+          "featuresRu": [
+            "Удача"
+          ],
+          "featuresEn": [
+            "Stroke of Luck"
+          ],
+          "values": {
+            "Sneak Attack": "10d6"
+          },
+          "proficiencyBonus": 6
+        }
+      ],
+      "columns": [
+        "Sneak Attack"
+      ]
+    },
+    "sorcerer": {
+      "nameRu": "Чародей",
+      "levels": [
+        {
+          "level": 1,
+          "featuresRu": [
+            "Использование заклинаний",
+            "Врождённое чародейство"
+          ],
+          "featuresEn": [
+            "Spellcasting",
+            "Innate Sorcery"
+          ],
+          "values": {
+            "Sorcery Points": "—",
+            "Cantrips": "4",
+            "Prepared Spells": "2",
+            "Slot 1": "2",
+            "Slot 2": "—",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 2,
+          "featuresRu": [
+            "Источник магии",
+            "Метамагия"
+          ],
+          "featuresEn": [
+            "Font of Magic",
+            "Metamagic"
+          ],
+          "values": {
+            "Sorcery Points": "2",
+            "Cantrips": "4",
+            "Prepared Spells": "4",
+            "Slot 1": "3",
+            "Slot 2": "—",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 3,
+          "featuresRu": [
+            "Подкласс чародея"
+          ],
+          "featuresEn": [
+            "Sorcerer Subclass"
+          ],
+          "values": {
+            "Sorcery Points": "3",
+            "Cantrips": "4",
+            "Prepared Spells": "6",
+            "Slot 1": "4",
+            "Slot 2": "2",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 4,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Sorcery Points": "4",
+            "Cantrips": "5",
+            "Prepared Spells": "7",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 5,
+          "featuresRu": [
+            "Восстановление магии"
+          ],
+          "featuresEn": [
+            "Sorcerous Restoration"
+          ],
+          "values": {
+            "Sorcery Points": "5",
+            "Cantrips": "5",
+            "Prepared Spells": "9",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "2",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 6,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Sorcery Points": "6",
+            "Cantrips": "5",
+            "Prepared Spells": "10",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 7,
+          "featuresRu": [
+            "Воплощённая магия"
+          ],
+          "featuresEn": [
+            "Sorcery Incarnate"
+          ],
+          "values": {
+            "Sorcery Points": "7",
+            "Cantrips": "5",
+            "Prepared Spells": "11",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "1",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 8,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Sorcery Points": "8",
+            "Cantrips": "5",
+            "Prepared Spells": "12",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "2",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 9,
+          "featuresRu": [
+            "—"
+          ],
+          "featuresEn": [],
+          "values": {
+            "Sorcery Points": "9",
+            "Cantrips": "5",
+            "Prepared Spells": "14",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "1",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 10,
+          "featuresRu": [
+            "Метамагия"
+          ],
+          "featuresEn": [
+            "Metamagic"
+          ],
+          "values": {
+            "Sorcery Points": "10",
+            "Cantrips": "6",
+            "Prepared Spells": "15",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 11,
+          "featuresRu": [
+            "—"
+          ],
+          "featuresEn": [],
+          "values": {
+            "Sorcery Points": "11",
+            "Cantrips": "6",
+            "Prepared Spells": "16",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 12,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Sorcery Points": "12",
+            "Cantrips": "6",
+            "Prepared Spells": "16",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 13,
+          "featuresRu": [
+            "—"
+          ],
+          "featuresEn": [],
+          "values": {
+            "Sorcery Points": "13",
+            "Cantrips": "6",
+            "Prepared Spells": "17",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 14,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Sorcery Points": "14",
+            "Cantrips": "6",
+            "Prepared Spells": "17",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 15,
+          "featuresRu": [
+            "—"
+          ],
+          "featuresEn": [],
+          "values": {
+            "Sorcery Points": "15",
+            "Cantrips": "6",
+            "Prepared Spells": "18",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "1",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 16,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Sorcery Points": "16",
+            "Cantrips": "6",
+            "Prepared Spells": "18",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "1",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 17,
+          "featuresRu": [
+            "Метамагия"
+          ],
+          "featuresEn": [
+            "Metamagic"
+          ],
+          "values": {
+            "Sorcery Points": "17",
+            "Cantrips": "6",
+            "Prepared Spells": "19",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "1",
+            "Slot 9": "1"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 18,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Sorcery Points": "18",
+            "Cantrips": "6",
+            "Prepared Spells": "20",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "3",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "1",
+            "Slot 9": "1"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 19,
+          "featuresRu": [
+            "Эпическая черта"
+          ],
+          "featuresEn": [
+            "Epic Boon"
+          ],
+          "values": {
+            "Sorcery Points": "19",
+            "Cantrips": "6",
+            "Prepared Spells": "21",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "3",
+            "Slot 6": "2",
+            "Slot 7": "1",
+            "Slot 8": "1",
+            "Slot 9": "1"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 20,
+          "featuresRu": [
+            "Апофеоз магии"
+          ],
+          "featuresEn": [
+            "Arcane Apotheosis"
+          ],
+          "values": {
+            "Sorcery Points": "20",
+            "Cantrips": "6",
+            "Prepared Spells": "22",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "3",
+            "Slot 6": "2",
+            "Slot 7": "2",
+            "Slot 8": "1",
+            "Slot 9": "1"
+          },
+          "proficiencyBonus": 6
+        }
+      ],
+      "columns": [
+        "Sorcery Points",
+        "Cantrips",
+        "Prepared Spells",
+        "Slot 1",
+        "Slot 2",
+        "Slot 3",
+        "Slot 4",
+        "Slot 5",
+        "Slot 6",
+        "Slot 7",
+        "Slot 8",
+        "Slot 9"
+      ]
+    },
+    "warlock": {
+      "nameRu": "Колдун",
+      "levels": [
+        {
+          "level": 1,
+          "featuresRu": [
+            "Таинственные воззвания",
+            "Магия договора"
+          ],
+          "featuresEn": [
+            "Eldritch Invocations",
+            "Pact Magic"
+          ],
+          "values": {
+            "Eldritch Invocations": "1",
+            "Cantrips": "2",
+            "Prepared Spells": "2",
+            "Spell Slots": "1",
+            "Slot Level": "1"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 2,
+          "featuresRu": [
+            "Магическая хитрость"
+          ],
+          "featuresEn": [
+            "Magical Cunning"
+          ],
+          "values": {
+            "Eldritch Invocations": "3",
+            "Cantrips": "2",
+            "Prepared Spells": "3",
+            "Spell Slots": "2",
+            "Slot Level": "1"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 3,
+          "featuresRu": [
+            "Подкласс колдуна"
+          ],
+          "featuresEn": [
+            "Warlock Subclass"
+          ],
+          "values": {
+            "Eldritch Invocations": "3",
+            "Cantrips": "2",
+            "Prepared Spells": "4",
+            "Spell Slots": "2",
+            "Slot Level": "2"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 4,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Eldritch Invocations": "3",
+            "Cantrips": "3",
+            "Prepared Spells": "5",
+            "Spell Slots": "2",
+            "Slot Level": "2"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 5,
+          "featuresRu": [
+            "—"
+          ],
+          "featuresEn": [],
+          "values": {
+            "Eldritch Invocations": "5",
+            "Cantrips": "3",
+            "Prepared Spells": "6",
+            "Spell Slots": "2",
+            "Slot Level": "3"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 6,
+          "featuresRu": [
+            "Умения подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Eldritch Invocations": "5",
+            "Cantrips": "3",
+            "Prepared Spells": "7",
+            "Spell Slots": "2",
+            "Slot Level": "3"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 7,
+          "featuresRu": [
+            "—"
+          ],
+          "featuresEn": [],
+          "values": {
+            "Eldritch Invocations": "6",
+            "Cantrips": "3",
+            "Prepared Spells": "8",
+            "Spell Slots": "2",
+            "Slot Level": "4"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 8,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Eldritch Invocations": "6",
+            "Cantrips": "3",
+            "Prepared Spells": "9",
+            "Spell Slots": "2",
+            "Slot Level": "4"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 9,
+          "featuresRu": [
+            "Связь с покровителем"
+          ],
+          "featuresEn": [
+            "Contact Patron"
+          ],
+          "values": {
+            "Eldritch Invocations": "7",
+            "Cantrips": "3",
+            "Prepared Spells": "10",
+            "Spell Slots": "2",
+            "Slot Level": "5"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 10,
+          "featuresRu": [
+            "Умения подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Eldritch Invocations": "7",
+            "Cantrips": "4",
+            "Prepared Spells": "10",
+            "Spell Slots": "2",
+            "Slot Level": "5"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 11,
+          "featuresRu": [
+            "Таинственный арканум (6 уровень)"
+          ],
+          "featuresEn": [
+            "Mystic Arcanum (level 6 spell)"
+          ],
+          "values": {
+            "Eldritch Invocations": "7",
+            "Cantrips": "4",
+            "Prepared Spells": "11",
+            "Spell Slots": "3",
+            "Slot Level": "5"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 12,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Eldritch Invocations": "8",
+            "Cantrips": "4",
+            "Prepared Spells": "11",
+            "Spell Slots": "3",
+            "Slot Level": "5"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 13,
+          "featuresRu": [
+            "Таинственный арканум (7 уровень)"
+          ],
+          "featuresEn": [
+            "Mystic Arcanum (level 7 spell)"
+          ],
+          "values": {
+            "Eldritch Invocations": "8",
+            "Cantrips": "4",
+            "Prepared Spells": "12",
+            "Spell Slots": "3",
+            "Slot Level": "5"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 14,
+          "featuresRu": [
+            "Умения подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Eldritch Invocations": "8",
+            "Cantrips": "4",
+            "Prepared Spells": "12",
+            "Spell Slots": "3",
+            "Slot Level": "5"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 15,
+          "featuresRu": [
+            "Таинственный арканум (8 уровень)"
+          ],
+          "featuresEn": [
+            "Mystic Arcanum (level 8 spell)"
+          ],
+          "values": {
+            "Eldritch Invocations": "9",
+            "Cantrips": "4",
+            "Prepared Spells": "13",
+            "Spell Slots": "3",
+            "Slot Level": "5"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 16,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Eldritch Invocations": "9",
+            "Cantrips": "4",
+            "Prepared Spells": "13",
+            "Spell Slots": "3",
+            "Slot Level": "5"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 17,
+          "featuresRu": [
+            "Таинственный арканум (9 уровень)"
+          ],
+          "featuresEn": [
+            "Mystic Arcanum (level 9 spell)"
+          ],
+          "values": {
+            "Eldritch Invocations": "9",
+            "Cantrips": "4",
+            "Prepared Spells": "14",
+            "Spell Slots": "4",
+            "Slot Level": "5"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 18,
+          "featuresRu": [
+            "—"
+          ],
+          "featuresEn": [],
+          "values": {
+            "Eldritch Invocations": "10",
+            "Cantrips": "4",
+            "Prepared Spells": "14",
+            "Spell Slots": "4",
+            "Slot Level": "5"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 19,
+          "featuresRu": [
+            "Эпическая черта"
+          ],
+          "featuresEn": [
+            "Epic Boon"
+          ],
+          "values": {
+            "Eldritch Invocations": "10",
+            "Cantrips": "4",
+            "Prepared Spells": "15",
+            "Spell Slots": "4",
+            "Slot Level": "5"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 20,
+          "featuresRu": [
+            "Таинственный мастер"
+          ],
+          "featuresEn": [
+            "Eldritch Master"
+          ],
+          "values": {
+            "Eldritch Invocations": "10",
+            "Cantrips": "4",
+            "Prepared Spells": "15",
+            "Spell Slots": "4",
+            "Slot Level": "5"
+          },
+          "proficiencyBonus": 6
+        }
+      ],
+      "columns": [
+        "Eldritch Invocations",
+        "Cantrips",
+        "Prepared Spells",
+        "Spell Slots",
+        "Slot Level"
+      ]
+    },
+    "wizard": {
+      "nameRu": "Волшебник",
+      "levels": [
+        {
+          "level": 1,
+          "featuresRu": [
+            "Использование заклинаний",
+            "Ритуальный адепт",
+            "Магическое восстановление"
+          ],
+          "featuresEn": [
+            "Spellcasting",
+            "Ritual Adept",
+            "Arcane Recovery"
+          ],
+          "values": {
+            "Cantrips": "3",
+            "Prepared Spells": "4",
+            "Slot 1": "2",
+            "Slot 2": "—",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 2,
+          "featuresRu": [
+            "Учёный"
+          ],
+          "featuresEn": [
+            "Scholar"
+          ],
+          "values": {
+            "Cantrips": "3",
+            "Prepared Spells": "5",
+            "Slot 1": "3",
+            "Slot 2": "—",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 3,
+          "featuresRu": [
+            "Подкласс волшебника"
+          ],
+          "featuresEn": [
+            "Wizard Subclass"
+          ],
+          "values": {
+            "Cantrips": "3",
+            "Prepared Spells": "6",
+            "Slot 1": "4",
+            "Slot 2": "2",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 4,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Cantrips": "4",
+            "Prepared Spells": "7",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "—",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 2
+        },
+        {
+          "level": 5,
+          "featuresRu": [
+            "Заучивание заклинаний"
+          ],
+          "featuresEn": [
+            "Memorize Spell"
+          ],
+          "values": {
+            "Cantrips": "4",
+            "Prepared Spells": "9",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "2",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 6,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Cantrips": "4",
+            "Prepared Spells": "10",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "—",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 7,
+          "featuresRu": [
+            "—"
+          ],
+          "featuresEn": [],
+          "values": {
+            "Cantrips": "4",
+            "Prepared Spells": "11",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "1",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 8,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Cantrips": "4",
+            "Prepared Spells": "12",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "2",
+            "Slot 5": "—",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 3
+        },
+        {
+          "level": 9,
+          "featuresRu": [
+            "—"
+          ],
+          "featuresEn": [],
+          "values": {
+            "Cantrips": "4",
+            "Prepared Spells": "14",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "1",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 10,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Cantrips": "5",
+            "Prepared Spells": "15",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "—",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 11,
+          "featuresRu": [
+            "—"
+          ],
+          "featuresEn": [],
+          "values": {
+            "Cantrips": "5",
+            "Prepared Spells": "16",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 12,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Cantrips": "5",
+            "Prepared Spells": "16",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "—",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 4
+        },
+        {
+          "level": 13,
+          "featuresRu": [
+            "—"
+          ],
+          "featuresEn": [],
+          "values": {
+            "Cantrips": "5",
+            "Prepared Spells": "17",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 14,
+          "featuresRu": [
+            "Умение подкласса"
+          ],
+          "featuresEn": [
+            "Subclass feature"
+          ],
+          "values": {
+            "Cantrips": "5",
+            "Prepared Spells": "18",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "—",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 15,
+          "featuresRu": [
+            "—"
+          ],
+          "featuresEn": [],
+          "values": {
+            "Cantrips": "5",
+            "Prepared Spells": "19",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "1",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 16,
+          "featuresRu": [
+            "Улучшение характеристик"
+          ],
+          "featuresEn": [
+            "Ability Score Improvement"
+          ],
+          "values": {
+            "Cantrips": "5",
+            "Prepared Spells": "21",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "1",
+            "Slot 9": "—"
+          },
+          "proficiencyBonus": 5
+        },
+        {
+          "level": 17,
+          "featuresRu": [
+            "—"
+          ],
+          "featuresEn": [],
+          "values": {
+            "Cantrips": "5",
+            "Prepared Spells": "22",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "2",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "1",
+            "Slot 9": "1"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 18,
+          "featuresRu": [
+            "Мастерство заклинателя"
+          ],
+          "featuresEn": [
+            "Spell Mastery"
+          ],
+          "values": {
+            "Cantrips": "5",
+            "Prepared Spells": "23",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "3",
+            "Slot 6": "1",
+            "Slot 7": "1",
+            "Slot 8": "1",
+            "Slot 9": "1"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 19,
+          "featuresRu": [
+            "Эпическая черта"
+          ],
+          "featuresEn": [
+            "Epic Boon"
+          ],
+          "values": {
+            "Cantrips": "5",
+            "Prepared Spells": "24",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "3",
+            "Slot 6": "2",
+            "Slot 7": "1",
+            "Slot 8": "1",
+            "Slot 9": "1"
+          },
+          "proficiencyBonus": 6
+        },
+        {
+          "level": 20,
+          "featuresRu": [
+            "Фирменные заклинания"
+          ],
+          "featuresEn": [
+            "Signature Spells"
+          ],
+          "values": {
+            "Cantrips": "5",
+            "Prepared Spells": "25",
+            "Slot 1": "4",
+            "Slot 2": "3",
+            "Slot 3": "3",
+            "Slot 4": "3",
+            "Slot 5": "3",
+            "Slot 6": "2",
+            "Slot 7": "2",
+            "Slot 8": "1",
+            "Slot 9": "1"
+          },
+          "proficiencyBonus": 6
+        }
+      ],
+      "columns": [
+        "Cantrips",
+        "Prepared Spells",
+        "Slot 1",
+        "Slot 2",
+        "Slot 3",
+        "Slot 4",
+        "Slot 5",
+        "Slot 6",
+        "Slot 7",
+        "Slot 8",
+        "Slot 9"
+      ]
+    }
+  }
+}

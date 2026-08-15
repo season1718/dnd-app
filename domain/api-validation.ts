@@ -3,6 +3,7 @@ import { z } from "zod";
 const identifier = z.string().trim().min(1).max(120);
 const boundedText = (maximum: number) => z.string().trim().max(maximum);
 const finiteInteger = (minimum: number, maximum: number) => z.number().finite().int().min(minimum).max(maximum);
+const portraitDataUrl = z.string().max(2_000_000).refine((value) => value === "" || /^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/]+=*$/.test(value), "Портрет должен быть изображением JPEG, PNG или WebP");
 
 export const createCampaignSchema = z.object({
   actorProfileId: identifier,
@@ -61,9 +62,16 @@ export const updateCharacterSchema = z.object({
   system: z.object({
     name: boundedText(100).min(1), kind: z.enum(["PC", "NPC"]), species: boundedText(100), background: boundedText(100), alignment: boundedText(100),
     experience: finiteInteger(0, 1_000_000_000), armorClass: finiteInteger(0, 100), speed: finiteInteger(0, 1000), maximumHp: finiteInteger(1, 1_000_000),
+    portraitDataUrl: portraitDataUrl.optional(),
     strength: finiteInteger(1, 30), dexterity: finiteInteger(1, 30), constitution: finiteInteger(1, 30), intelligence: finiteInteger(1, 30), wisdom: finiteInteger(1, 30), charisma: finiteInteger(1, 30),
   }).strict().optional(),
-  sections: z.record(z.string(), z.unknown()).optional(),
+  sections: z.record(z.string(), z.unknown()).superRefine((sections, context) => {
+    const noteSchema = z.array(z.object({ id: identifier, text: boundedText(5000) }).strict()).max(100);
+    for (const key of ["playerNotes", "gmNotes"] as const) if (key in sections) {
+      const result = noteSchema.safeParse(sections[key]);
+      if (!result.success) context.addIssue({ code: "custom", path: [key], message: "Некорректный формат заметок" });
+    }
+  }).optional(),
   classes: z.array(z.lazy(() => characterClassSchema)).max(20).optional(),
 }).strict().superRefine(({ classes }, context) => {
   if (classes && classes.reduce((total, item) => total + item.level, 0) > 20) context.addIssue({ code: "custom", path: ["classes"], message: "Общий уровень не может превышать 20" });
@@ -84,6 +92,22 @@ export const updateCharacterClassesSchema = z.object({
     context.addIssue({ code: "custom", path: ["classes"], message: "Общий уровень не может превышать 20" });
   }
 });
+
+export const applyLevelUpSchema = z.object({
+  actorProfileId: identifier,
+  expectedRevision: z.string().max(120),
+  classKey: identifier,
+  choices: z.array(z.object({
+    id: identifier,
+    kind: z.enum(["FEATURE", "SUBCLASS", "PROFICIENCY", "ABILITY", "FEAT"]),
+    name: boundedText(120).optional().default(""),
+    description: boundedText(2000).optional().default(""),
+    ability: z.enum(["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"]).optional(),
+    amount: finiteInteger(1, 2).optional(),
+  }).strict()).max(20).optional().default([]),
+}).strict();
+
+export const acknowledgeLevelUpSchema = z.object({ profileId: identifier, eventId: identifier }).strict();
 
 export const spellSlotSchema = z.object({
   pool: z.enum(["STANDARD", "PACT", "SPECIAL"]),

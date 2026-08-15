@@ -2,6 +2,7 @@ import { z } from "zod";
 
 const integer = (minimum: number, maximum: number) => z.number().finite().int().min(minimum).max(maximum);
 const text = (maximum: number) => z.string().max(maximum);
+const portraitDataUrl = z.string().max(2_000_000).refine((value) => value === "" || /^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/]+=*$/.test(value), "Некорректный портрет");
 
 const classSchema = z.object({ className: text(80).min(1), subclassName: text(80), level: integer(1, 20) }).strict();
 const resourceSchema = z.object({ name: text(120).min(1), maximum: integer(0, 999), spent: integer(0, 999), resetOn: z.enum(["SHORT_REST", "LONG_REST", "MANUAL"]) }).strict()
@@ -21,6 +22,7 @@ export const dndCompanionCharacterSchema = z.object({
   exportedAt: z.string(),
   character: z.object({
     name: text(100).min(1), kind: z.enum(["PC", "NPC"]), species: text(100), background: text(100), alignment: text(100),
+    portraitDataUrl: portraitDataUrl.optional().default(""),
     experience: integer(0, 10_000_000), abilities: z.object({ strength: integer(1, 30), dexterity: integer(1, 30), constitution: integer(1, 30), intelligence: integer(1, 30), wisdom: integer(1, 30), charisma: integer(1, 30) }).strict(),
     armorClass: integer(0, 100), speed: integer(0, 1000), maximumHp: integer(1, 1_000_000), currentHp: integer(0, 1_000_000), temporaryHp: integer(0, 1_000_000),
     inspiration: z.boolean(), deathSuccesses: integer(0, 3), deathFailures: integer(0, 3),
